@@ -1,4 +1,3 @@
-# import saved dataframes from all age groups and other studies for plotting and analysis
 library(ggplot2)
 library(dplyr)
 library(tidyr)
@@ -6,7 +5,6 @@ library(cowplot)
 library(reshape2)
 
 # import dataframes for 24 and 2 octave for each age group----
-setwd("/Users/Joshua/Dropbox/R/RProjects/WidebandAbsorbance/DataSets and scripts/developmental wai")
 newborn.24 = readRDS("newborn.24.rds")
 newborn.2 = readRDS("newborn.2.rds")
 six.24 = readRDS("six.24.rds")
@@ -16,7 +14,6 @@ twelve.2 = readRDS("twelve.2.rds")
 eighteen.24 = readRDS("eighteen.24.rds")
 eighteen.2 = readRDS("eighteen.2.rds")
 ages = readRDS("ages.rds")
-setwd("/Users/Joshua/Dropbox/R/RProjects/WidebandAbsorbance/Working directory")
 
 # first join as wide df - need to rename all abs, mag, pha with the age group
 # there are a couple of extra test retest columns in the data - need to remove
@@ -3341,7 +3338,7 @@ ggsave("ls.plots.GB.jpeg", ls.plot.gb, height=6, width=6, dpi=500)
 #   theme(plot.margin=unit(c(0.5, 0.8, 0.1, 0.5),"lines")) 
 # print(mag.2.plot) # it is different - sth wrong with the ls mag conversion
 
-############################################## COMPARE MY DATA AGAINST NORMATIVE ###################################################################
+############################################## COMPARE OUR DATA AGAINST OTHER STUDIES ###################################################################
 # import normative data and plot against my data
 # plot 24 octave and 1/2 octave lsmeans (can compart hunter lsmeans)
 
@@ -3625,7 +3622,3 @@ pha.other.studies.plot <- ggplot(pha.other.studies, aes(x=Frequency, y=Phase, gr
   facet_wrap(~Age, ncol = 2, scales="free", drop = T)
 pha.other.studies.plot
 ggsave("pha.other.studies.jpeg", pha.other.studies.plot, height=6, width=12, dpi=500)
-
-
-
-
