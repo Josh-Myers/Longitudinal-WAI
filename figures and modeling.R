@@ -437,7 +437,7 @@ pha.plot.full <- ggplot(pha.median.long.full, aes(x=Frequency, y=phase, group=ag
   xlab("Frequency, Hz") +
   ylab(expression(paste(italic(phi1[italic("Y")])~", degrees"))) +
   scale_x_log10(expand=c(0, 0), breaks=c(226, 500, 1000, 2000, 4000, 8000))  +
-  scale_y_continuous(expand=c(0, 0), breaks=c(-60, -30, 0, 30, 60, 90), limits=c(-60, 90)) +
+  scale_y_continuous(expand=c(0, 0), breaks=c(-60, -30, 0, 30, 60, 90), limits=c(-61, 91)) +
   theme_bw() +
   #geom_hline(yintercept=45, linetype = "dashed", size = 0.4) +
   scale_colour_discrete(drop=TRUE, limits = levels(pha.median.long.full$age.group), breaks = levels(pha.median.long.full$age.group)) +
@@ -1662,21 +1662,21 @@ colnames(pha.2.full.6) = num.dem.freq.names
 colnames(pha.2.full.12) = num.dem.freq.names
 colnames(pha.2.full.18) = num.dem.freq.names
 
-# get the demographics
+# get the demographics - number of subjects, M/F, birth weights etc
 # first of all subject specific information
 subs.0 = str(as.factor(abs.2.full.0$id.res)) # 201 subjects at birth
 unique.0 = abs.2.full.0[!duplicated(abs.2.full.0$id.res),]
-sex.0 = summary(unique.0$gender) # 97 F; 104 M
+sex.0 = summary(unique.0$gender) 
 sex.0
 # there was one GA = 55! set to NA
 unique.0$ga[unique.0$ga == 55] = NA
-ga = summary(unique.0$ga) # 34 to 41.6 (median = 39, IQR 38.2 to 40.1) 
+ga = summary(unique.0$ga) 
 ga
-birth.weight = summary(unique.0$birth.weight) # 2390 to 5120, median 3478, 3181 to 3810 - is 5120 feasible?
+birth.weight = summary(unique.0$birth.weight) 
 birth.weight
-birth.type = summary(unique.0$type.of.birth) # 123 VB; 95 CS
+birth.type = summary(unique.0$type.of.birth) 
 birth.type
-summary(unique.0$maternal.ethnicity) # 173 caucasian; 22 asian; 17 ATSI; 3 oceanian; 1 african; 1 sth american; 1 unknown
+summary(unique.0$maternal.ethnicity) 
 # then ear specific
 
 # head circum - 48 is wrong - too big
@@ -1688,29 +1688,29 @@ summary(unique.0$body.length)
 
 ears.0 = str(as.factor(abs.2.full.0$ear.id)) # 361 ears at birth
 
-subs.6 = str(as.factor(abs.2.full.6$id.res)) # 172 subjects at 6mth
+subs.6 = str(as.factor(abs.2.full.6$id.res)) # 160 subjects at 6mth
 unique.6 = abs.2.full.6[!duplicated(abs.2.full.6$id.res),]
 sex.6 = summary(unique.6$gender) # 90 F; 82 M
 sex.6
-summary(unique.6$maternal.ethnicity) # 138 caucasian; 19 asian; 12 ATSI; 2 oceanian; 1 sth american
+summary(unique.6$maternal.ethnicity) 
 # then ear specific
-ears.6 = str(as.factor(abs.2.full.6$ear.id)) # 386 ears at 6 mths
+ears.6 = str(as.factor(abs.2.full.6$ear.id)) # 265 ears at 6 mths
 
 subs.12 = str(as.factor(abs.2.full.12$id.res)) # 119 subjects at 12mth
 unique.12 = abs.2.full.12[!duplicated(abs.2.full.12$id.res),]
-sex.12 = summary(unique.12$gender) # 50 F; 69 M
+sex.12 = summary(unique.12$gender) 
 sex.12
-summary(unique.12$maternal.ethnicity) # 97 caucasian; 8 asian; 7 ATSI; 3 oceanian; 2 sth american, 1 african, 1 unknown
+summary(unique.12$maternal.ethnicity) 
 # then ear specific
-ears.12 = str(as.factor(abs.2.full.12$ear.id)) # 207 ears at 12 mths
+ears.12 = str(as.factor(abs.2.full.12$ear.id)) # 196 ears at 12 mths
 
 subs.18 = str(as.factor(abs.2.full.18$id.res)) # 87 subjects at 18mth
 unique.18 = abs.2.full.18[!duplicated(abs.2.full.18$id.res),]
 sex.18 = summary(unique.18$gender) # 39 F; 48 M
 sex.18
-summary(unique.18$maternal.ethnicity) # 64 caucasian; 13 asian; 6 ATSI; 3 oceanian; 1 sth american
+summary(unique.18$maternal.ethnicity) 
 # then ear specific
-ears.18 = str(as.factor(abs.2.full.18$ear.id)) # 151 ears at 18 mths
+ears.18 = str(as.factor(abs.2.full.18$ear.id)) # 139 ears at 18 mths
 
 # I didn't save the ages for 6, 12 and 18 mths in the demographics had to go back and save a new file (ages.rda)
 ## need to match id.res with the unique.6, unique.12 etc
@@ -2282,19 +2282,19 @@ ear.canal.df$maternal.ethnicity[ear.canal.df$maternal.ethnicity == "South Americ
 ear.canal.df$maternal.ethnicity[is.na(ear.canal.df$maternal.ethnicity)] = "Asian"
 ear.canal.df$maternal.ethnicity = droplevels(ear.canal.df$maternal.ethnicity)
 
-# modeling
+# modeling ####################
 #library(lme4)
-library(lmerTest)
+library(lmerTest) # gives p-values
 library(MASS)
 library(rcompanion)
 library(car)
 library(emmeans)
-library(afex) # this makes the || notation work for factors
+library(afex) # this package makes the || notation work for factors
 options(scipen = 10)
 # (1 | g1/g2); Intercept varying among g1 and g2 within g1. (g1 is the group), for example - (1|school/class) models classes nested within schools
 # start with simple model and increase complexity until no longer improving fit - then compare to null model
 # compare models using anova (model1, model2) with the simpler model first 
-# use Anova from car package, rather than anova - https://bbolker.github.io/mixedmodels-misc/ecostats_chap.html # can't though because glmmTMB only has anova
+# use Anova from car package, rather than anova - https://bbolker.github.io/mixedmodels-misc/ecostats_chap.html 
 # when comparing with anova - set reml as F, then update with reml = T for final model update(f, REML = T)
 
 # age vs ethnicity
@@ -2407,7 +2407,7 @@ plot(ear.canal.f_box)
 # log and boxcox are very similar - use log
 ear.canal.f_log = lmer(S_log ~ age.group * maternal.ethnicity + gender + ear + (1 | id.res/ear.id), ear.canal.df, REML = F)
 plot(ear.canal.f_log) 
-anova(ear.canal.f_log)
+Anova(ear.canal.f_log)
 
 ear.canal.f.final = update(ear.canal.f_log, REML = T)
 # post hoc analyses (plot 95% ci)
@@ -2427,7 +2427,6 @@ ear.canal.lsmean.age_t = mutate_at(ear.canal.lsmean.age_t, vars(mean, lower, upp
 ear.canal.lsmean.age_t = t(ear.canal.lsmean.age_t)
 write.table(ear.canal.lsmean.age_t, file = "ear.canal.emmeans.txt", sep = ",", quote = FALSE, row.names = F)
 
-####################
 # abs
 # first fit with reml = F to compare with anova then final model update with reml = T
 # regarding the random effects - the most correct option is:
@@ -2439,11 +2438,7 @@ write.table(ear.canal.lsmean.age_t, file = "ear.canal.emmeans.txt", sep = ",", q
 #fit2 = lmer(Absorbance ~ Frequency * age.group * maternal.ethnicity + gender + ear + (1 | id.res/ear.id), abs.2.long, REML = F) 
 
 # linear model
-abs.f1 = lmer(Absorbance ~ Frequency * age.group + gender + maternal.ethnicity + ear + (1 | id.res/ear.id), abs.2.long, REML = F)
-abs.f = lmer(Absorbance ~ Frequency * age.group + gender + maternal.ethnicity + ear + (1 | id.res/ear.id), abs.2.long, REML = F)
-anova(abs.f, abs.f1) # including /Frequency doesn't change much
-AIC(abs.f)
-AIC(abs.f1) 
+abs.f = lmer(Absorbance ~ Frequency * age.group * maternal.ethnicity + gender + ear + (1 | id.res/ear.id), abs.2.long, REML = F)
 # check assumptions
 plot(abs.f) 
 # there is a pattern in the residuals - because it is a proportion (bounded by 0 and 1 - not linear, therefore)
@@ -2455,8 +2450,10 @@ abs.2.long$Absorbance_t = logit(abs.2.long$Absorbance_0)
 
 abs.f_t = lmer_alt(Absorbance_t ~ Frequency * age.group * maternal.ethnicity + gender +  + ear + (Frequency || id.res/ear.id), abs.2.long, REML = F)
 summary(abs.f_t)
-anova(abs.f_t)
-Anova(abs.f_t)
+abs.anova = as.data.frame(Anova(abs.f_t))
+abs.anova$names = rownames(abs.anova)
+abs.anova = abs.anova[,c(4, 1, 2, 3)]
+write.table(abs.anova, file = "abs.anova.txt", sep = ",", quote = FALSE, row.names = F)
 
 abs.f.final = update(abs.f_t, REML = TRUE) 
 
@@ -2577,10 +2574,11 @@ plot(mag.f_t.box) # log was better
 # use log transform
 mag.f_t = lmer_alt(mag_log ~ Frequency * age.group * maternal.ethnicity + gender + ear + (Frequency || id.res/ear.id), mag.2.long, REML = F)
 plot(mag.f_t)
-AIC(mag.f_t) 
 summary(mag.f_t)
-anova(mag.f_t)
-Anova(mag.f_t) 
+mag.anova = as.data.frame(Anova(mag.f_t))
+mag.anova$names = rownames(mag.anova)
+mag.anova = mag.anova[,c(4, 1, 2, 3)]
+write.table(mag.anova, file = "mag.anova.txt", sep = ",", quote = FALSE, row.names = F)
 
 # refit model with reml = T
 mag.f.final = update(mag.f_t, REML = T)
@@ -2686,10 +2684,11 @@ plot(mag.norm.f_t.box)
 # use log
 mag.norm.f_t = lmer_alt(mag_log ~ Frequency * age.group * maternal.ethnicity + gender + ear + (Frequency || id.res/ear.id), mag.norm.2.long, REML = F)
 plot(mag.norm.f_t)
-AIC(mag.norm.f_t) 
 summary(mag.norm.f_t)
-anova(mag.norm.f_t)
-Anova(mag.norm.f_t) 
+mag.norm.anova = as.data.frame(Anova(mag.norm.f_t))
+mag.norm.anova$names = rownames(mag.norm.anova)
+mag.norm.anova = mag.norm.anova[,c(4, 1, 2, 3)]
+write.table(mag.norm.anova, file = "mag.norm.anova.txt", sep = ",", quote = FALSE, row.names = F)
 
 # refit model with reml = T
 mag.norm.f.final = update(mag.norm.f_t, REML = T)
@@ -2992,7 +2991,6 @@ ggsave("mag.norm.eth.ls.jpeg", mag.norm.eth.ls, height=6, width=10, dpi=500)
 # the random effect for the final model is Frequency || id.res/ear.id - but it takes a long time to run, so just use the simplified initially
 g.norm.f = lmer(g.norm ~ Frequency * age.group * maternal.ethnicity + gender + ear + (1 | id.res/ear.id), g.norm.2.long, REML = F) 
 plot(g.norm.f) # Heteroscedasticity - transform
-AIC(g.norm.f)
 
 # transform g
 g.norm.2.long$g.norm1 = g.norm.2.long$g.norm + 1 # make positive for log and boxcox
@@ -3029,12 +3027,13 @@ plot(g.f_t.box)
 
 # use box cox
 g.norm.f_t = lmer_alt(G_box ~ Frequency * age.group * maternal.ethnicity + gender + ear + (Frequency || id.res/ear.id), g.norm.2.long, REML = F) 
-AIC(g.norm.f_t)
 plot(g.norm.f_t) 
 AIC(g.norm.f_t) # much better AIC
 summary(g.norm.f_t)
-anova(g.norm.f_t)
-Anova(g.norm.f_t) 
+g.norm.anova = as.data.frame(Anova(g.norm.f_t))
+g.norm.anova$names = rownames(g.norm.anova)
+g.norm.anova = g.norm.anova[,c(4, 1, 2, 3)]
+write.table(g.norm.anova, file = "g.norm.anova.txt", sep = ",", quote = FALSE, row.names = F)
 
 # refit model with reml = T
 g.norm.f.final = update(g.norm.f_t, REML = T)
@@ -3066,7 +3065,7 @@ g.norm.plot.lsmean <- ggplot(g.norm.lsmean.age_t, aes(x=Frequency, y=mean, ymin=
   xlab("Frequency, Hz") +
   ylab(expression(paste(italic("G")["n"]))) +
   scale_x_log10(expand=c(0, 0), breaks=c(250, 500, 1000, 2000, 4000, 8000))  +
-  scale_y_continuous(expand=c(0, 0), breaks=c(0, 0.5, 1, 1.5), limits=c(0, 1.5)) +
+  scale_y_continuous(expand=c(0, 0), breaks=c(0, 0.5, 1, 1.5), limits=c(-0.01, 1.51)) +
   theme_bw() +
   theme(legend.title=element_blank(), legend.text=element_text(size=10), legend.justification=c(0,1), 
         legend.position=c(0.01,0.99)) +
@@ -3099,7 +3098,7 @@ g.norm.eth.ls <- ggplot(g.norm.lsmean.eth_t, aes(x=Frequency, y=mean, ymin=lower
   xlab("Frequency, Hz") +
   ylab(expression(paste(italic("G")["n"]))) +
   scale_x_log10(expand=c(0, 0), breaks=c(250, 500, 1000, 2000, 4000, 8000))  +
-  scale_y_continuous(expand=c(0, 0), breaks=c(0, 0.5, 1, 1.5), limits=c(-0.05, 1.55)) +
+  scale_y_continuous(expand=c(0, 0), breaks=c(0, 0.5, 1, 1.5), limits=c(-0.06, 1.55)) +
   theme_bw() +
   theme(legend.title=element_blank(), legend.text=element_text(size=10), legend.justification=c(0,1), 
         legend.position=c(0,1)) +
@@ -3186,8 +3185,10 @@ b.norm.f_t = lmer_alt(b.norm_log ~ Frequency * age.group * maternal.ethnicity + 
 plot(b.norm.f_t) 
 AIC(b.norm.f_t) 
 summary(b.norm.f_t)
-anova(b.norm.f_t, test="Chisq")
-Anova(b.norm.f_t) 
+b.norm.anova = as.data.frame(Anova(b.norm.f_t))
+b.norm.anova$names = rownames(b.norm.anova)
+b.norm.anova = b.norm.anova[,c(4, 1, 2, 3)]
+write.table(b.norm.anova, file = "b.norm.anova.txt", sep = ",", quote = FALSE, row.names = F)
 
 # refit model with reml = T
 b.norm.f.final = update(b.norm.f_t, REML = T)
@@ -3269,7 +3270,6 @@ ggsave("ls.plots.abs.mag.jpeg", ls.plot.ay, height=9, width=6, dpi=500)
 # G and B norm
 ls.plot.gb <- plot_grid(g.norm.plot.lsmean, b.norm.plot.lsmean, nrow=2, ncol=1, align = "v", labels = c("A", "B")) 
 ggsave("ls.plots.GB.jpeg", ls.plot.gb, height=6, width=6, dpi=500)
-
 
 ###################################
 # # then convert rect lsmeans to polar and plot
@@ -3426,14 +3426,14 @@ colnames(sanford) = c("Frequency", "Absorbance", "Study", "Age")
 sanford = sanford[c("Study", "Age", "Frequency", "Absorbance")]
 sanford$Study = "Sanford et al. (2009)"
 
-keefe2000 = read_excel("/Users/Joshua/Dropbox/R/RProjects/WidebandAbsorbance/DataSets and scripts/developmental wai/other studies data/absorbance/keefe 2000 fig 5.xlsx", sheet = 1)
-colnames(keefe2000) = c("Frequency", "Reflectance", "EqVol", "G", "Age", "Study")
-keefe2000$Absorbance = 1 - keefe2000$Reflectance
-keefe2000 = dplyr::select(keefe2000, Frequency, Study, Age, Absorbance)
-keefe2000 = keefe2000[c("Study", "Age", "Frequency", "Absorbance")]
-keefe2000$Frequency = as.numeric(keefe2000$Frequency)
+# keefe2000 = read_excel("/Users/Joshua/Dropbox/R/RProjects/WidebandAbsorbance/DataSets and scripts/developmental wai/other studies data/absorbance/keefe 2000 fig 5.xlsx", sheet = 1)
+# colnames(keefe2000) = c("Frequency", "Reflectance", "EqVol", "G", "Age", "Study")
+# keefe2000$Absorbance = 1 - keefe2000$Reflectance
+# keefe2000 = dplyr::select(keefe2000, Frequency, Study, Age, Absorbance)
+# keefe2000 = keefe2000[c("Study", "Age", "Frequency", "Absorbance")]
+# keefe2000$Frequency = as.numeric(keefe2000$Frequency)
 
-abs.other.studies = rbind(abs.studies.long, shahnaz, hunter, keefe, merchant, sanford, keefe2000)
+abs.other.studies = rbind(abs.studies.long, shahnaz, hunter, keefe, merchant, sanford)
 abs.other.studies$Age = as.numeric(abs.other.studies$Age)
 
 # add my data
@@ -3458,8 +3458,8 @@ abs.other.studies$Age[abs.other.studies$Age == 24] = "18 to 24 months"
 abs.other.studies$Age = factor(abs.other.studies$Age, levels = c("Neonate", "6 months", "12 months", "18 to 24 months"))
 
 # facet 
-abs.other.studies.plot <- ggplot(abs.other.studies, aes(x=Frequency, y=Absorbance, group=Study, colour=Study)) +
-  geom_line() + # size = 0.8
+abs.other.studies.plot <- ggplot(abs.other.studies, aes(x=Frequency, y=Absorbance, group=Study, colour=Study, linetype=Study)) +
+  geom_line(size = 0.8) + # size = 0.8
   xlab("Frequency, Hz") +
   ylab(expression(paste(italic("A")))) +
   scale_x_log10(expand=c(0, 0), breaks=c(226, 500, 1000, 2000, 4000, 8000), limits=c(226,8000))  +
@@ -3543,8 +3543,8 @@ mag.other.studies$Age[mag.other.studies$Age == 24] = "18 to 24 months"
 mag.other.studies$Age = factor(mag.other.studies$Age, levels = c("Neonate", "6 months", "12 months", "18 to 24 months"))
 
 # facet 
-mag.other.studies.plot <- ggplot(mag.other.studies, aes(x=Frequency, y=Magnitude, group=Study, colour=Study)) +
-  geom_line() + # size = 0.8
+mag.other.studies.plot <- ggplot(mag.other.studies, aes(x=Frequency, y=Magnitude, group=Study, colour=Study, linetype=Study)) +
+  geom_line(size = 0.8) + # size = 0.8
   xlab("Frequency, Hz") +
   ylab(expression(paste("|", italic("Y"), "|"["t"], ", mmho"))) +
   scale_x_log10(expand=c(0, 0), breaks=c(226, 500, 1000, 2000, 4000, 8000), limits=c(226,8000))  +
@@ -3605,8 +3605,8 @@ pha.other.studies$Age[pha.other.studies$Age == 24] = "18 to 24 months"
 pha.other.studies$Age = factor(pha.other.studies$Age, levels = c("Neonate", "6 months", "12 months", "18 to 24 months"))
 
 # facet 
-pha.other.studies.plot <- ggplot(pha.other.studies, aes(x=Frequency, y=Phase, group=Study, colour=Study)) +
-  geom_line() + # size = 0.8
+pha.other.studies.plot <- ggplot(pha.other.studies, aes(x=Frequency, y=Phase, group=Study, colour=Study, linetype=Study)) +
+  geom_line(size = 0.8) + # size = 0.8
   xlab("Frequency, Hz") +
   ylab(expression(paste(italic(phi1[italic("Y")])~", degrees"))) +
   scale_x_log10(expand=c(0, 0), breaks=c(226, 500, 1000, 2000, 4000, 8000), limits=c(226,8000))  +
