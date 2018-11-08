@@ -235,7 +235,7 @@ wai.24 = dplyr::select(wai.24, -c(aabr0, tymp0, dpoae0, tymp6, dpoae6, tymp18, d
 # infants who attended at least one follow up
 wai.24.full = filter(wai.24, rs0=="pass" & rs6=="pass" | rs12=="pass" | rs18=="pass")
 
-## create a df of ears that were tested and passed all of the follow up sessions
+# create a df of ears that were tested and passed all of the follow up sessions
 attended.all = filter(wai.24, rs0=="pass" & rs6=="pass" & rs12=="pass" & rs18=="pass")
 setwd("/Users/Joshua/Dropbox/R/RProjects/WidebandAbsorbance/DataSets and scripts/WAI norms app/data frames")
 saveRDS(attended.all, "attended.all.rds")
@@ -283,9 +283,8 @@ abs.24.full.0$age.group = "Neonate"
 mag.24.full.0$age.group = "Neonate"
 pha.24.full.0$age.group = "Neonate"
 
-############ need to add rs column when select to check that they are all pass (done for newborn - need to do for other ages)
+# need to add rs column when select to check that they are all pass (done for newborn - need to do for other ages)
 # if not all pass need to filter
-
 abs.24.full.6 = dplyr::select(wai.24.full.6, 1:10, abs6.226:abs6.8000, rs6)
 mag.24.full.6 = dplyr::select(wai.24.full.6, 1:10, mag6.226:mag6.8000, rs6)
 pha.24.full.6 = dplyr::select(wai.24.full.6, 1:10, pha6.226:pha6.8000, rs6)
@@ -451,484 +450,7 @@ print(pha.plot.full)
 wai.plot.full <- plot_grid(abs.plot.full, mag.plot.full, pha.plot.full, nrow=3, ncol=1, align = "v", labels = c("A", "B", "C")) 
 ggsave("wai.plot.full.jpeg", wai.plot.full, height=9, width=6, dpi=500)
 
-### plot size of IQR for each age group
-# abs.24.full <- group_by(abs.24.full, age.group)
-# mag.24.full <- group_by(mag.24.full, age.group)
-# pha.24.full <- group_by(pha.24.full, age.group)
-# 
-# abs.25.full <- summarise_all(abs.24.full, funs(quantile(., 0.25)))
-# abs.25.full = dplyr::select(abs.25.full, -age.group)
-# abs.75.full <- summarise_all(abs.24.full, funs(quantile(., 0.75)))
-# abs.75.full = dplyr::select(abs.75.full, -age.group)
-# abs.iqr = abs.75.full - abs.25.full
-# abs.iqr$age.group = c("Neonate", "6 months", "12 months", "18 months")
-# 
-# mag.25.full <- summarise_all(mag.24.full, funs(quantile(., 0.25)))
-# mag.25.full = dplyr::select(mag.25.full, -age.group)
-# mag.75.full <- summarise_all(mag.24.full, funs(quantile(., 0.75)))
-# mag.75.full = dplyr::select(mag.75.full, -age.group)
-# mag.iqr = mag.75.full - mag.25.full
-# mag.iqr$age.group = c("Neonate", "6 months", "12 months", "18 months")
-# 
-# pha.25.full <- summarise_all(pha.24.full, funs(quantile(., 0.25)))
-# pha.25.full = dplyr::select(pha.25.full, -age.group)
-# pha.75.full <- summarise_all(pha.24.full, funs(quantile(., 0.75)))
-# pha.75.full = dplyr::select(pha.75.full, -age.group)
-# pha.iqr = pha.75.full - pha.25.full
-# pha.iqr$age.group = c("Neonate", "6 months", "12 months", "18 months")
-# 
-# abs.iqr.long <- gather(abs.iqr, Frequency, Absorbance, 1:107)
-# mag.iqr.long <- gather(mag.iqr, Frequency, Magnitude, 1:107)
-# pha.iqr.long <- gather(pha.iqr, Frequency, Phase, 1:107)
-# 
-# abs.iqr.long$Frequency = as.numeric(abs.iqr.long$Frequency)
-# mag.iqr.long$Frequency = as.numeric(mag.iqr.long$Frequency)
-# pha.iqr.long$Frequency = as.numeric(pha.iqr.long$Frequency)
-# 
-# abs.iqr.plot <- ggplot(abs.iqr.long, aes(x=Frequency, y=Absorbance, group=age.group, colour=age.group)) +
-#   geom_line()  +
-#   xlab("Frequency, Hz") +
-#   ylab(expression(paste(italic("A")))) +
-#   scale_x_log10(expand=c(0, 0), breaks=c(226, 500, 1000, 2000, 4000, 8000))  +
-#   scale_y_continuous(expand=c(0, 0), breaks=c(-0.2, 0, 0.2, 0.4, 0.6, 0.8, 1), limits=c(0, 0.6)) +
-#   theme_bw() +
-#   scale_colour_discrete(drop=TRUE, limits = levels(pha.median.long.full$age.group), breaks = levels(pha.median.long.full$age.group)) +
-#   theme(legend.title=element_blank(), legend.text=element_text(size=10), legend.justification=c(0,1), 
-#         legend.position=c(0,1)) +
-#   theme(axis.title.y = element_text(vjust = 0.6)) +
-#   theme(plot.margin=unit(c(0.5, 0.8, 0.1, 0.5),"lines")) +
-#   theme(legend.position="none") 
-# print(abs.iqr.plot)
-# 
-# mag.iqr.plot <- ggplot(mag.iqr.long, aes(x=Frequency, y=Magnitude, group=age.group, colour=age.group)) +
-#   geom_line()  +
-#   xlab("Frequency, Hz") +
-#   ylab(expression(paste("|", italic("Y"), "|,", " mmho"))) +
-#   scale_x_log10(expand=c(0, 0), breaks=c(226, 500, 1000, 2000, 4000, 8000))  +
-#   scale_y_continuous(expand=c(0, 0), breaks=c(0, 2, 4, 6, 8, 10, 12), limits=c(0, 12)) +
-#   theme_bw() +
-#   scale_colour_discrete(drop=TRUE, limits = levels(pha.median.long.full$age.group), breaks = levels(pha.median.long.full$age.group)) +
-#   theme(legend.title=element_blank(), legend.text=element_text(size=10), legend.justification=c(0,1), 
-#         legend.position=c(0,1)) +
-#   theme(axis.title.y = element_text(vjust = 0.6)) +
-#   theme(plot.margin=unit(c(0.5, 0.8, 0.1, 0.5),"lines")) +
-#   theme(legend.position="none") 
-# print(mag.iqr.plot)
-# 
-# pha.iqr.plot <- ggplot(pha.iqr.long, aes(x=Frequency, y=Phase, group=age.group, colour=age.group)) +
-#   geom_line()  +
-#   xlab("Frequency, Hz") +
-#   ylab(expression(paste(italic(phi1[italic("Y")])~", degrees"))) +
-#   scale_x_log10(expand=c(0, 0), breaks=c(226, 500, 1000, 2000, 4000, 8000))  +
-#   scale_y_continuous(expand=c(0, 0), breaks=c(-60, -30, 0, 30, 60, 90), limits=c(0, 120)) +
-#   theme_bw() +
-#   scale_colour_discrete(drop=TRUE, limits = levels(pha.median.long.full$age.group), breaks = levels(pha.median.long.full$age.group)) +
-#   theme(legend.title=element_blank(), legend.text=element_text(size=10), legend.justification=c(0,1), 
-#         legend.position=c(0,1)) +
-#   theme(axis.title.y = element_text(vjust = 0.6)) +
-#   theme(plot.margin=unit(c(0.5, 0.8, 0.1, 0.5),"lines")) +
-#   theme(legend.position="none") 
-# print(pha.iqr.plot)
-
-# Demographics plots - by sex, ear and ethnicity 
-# sex plot
-abs.24.sex = rbind.data.frame(abs.24.full.0, abs.24.full.6, abs.24.full.12, abs.24.full.18)
-mag.24.sex = rbind.data.frame(mag.24.full.0, mag.24.full.6, mag.24.full.12, mag.24.full.18)
-pha.24.sex = rbind.data.frame(pha.24.full.0, pha.24.full.6, pha.24.full.12, pha.24.full.18)
-
-abs.24.sex$age.group = as.factor(abs.24.sex$age.group)
-mag.24.sex$age.group = as.factor(mag.24.sex$age.group)
-pha.24.sex$age.group = as.factor(pha.24.sex$age.group)
-
-abs.24.sex$age.group = factor(abs.24.sex$age.group, levels = c("Neonate", "6 months", "12 months", "18 months"))
-mag.24.sex$age.group = factor(mag.24.sex$age.group, levels = c("Neonate", "6 months", "12 months", "18 months"))
-pha.24.sex$age.group = factor(pha.24.sex$age.group, levels = c("Neonate", "6 months", "12 months", "18 months"))
-
-abs.24.sex = dplyr::select(abs.24.sex, -c(ga:ear, rs))
-abs.24.m = filter(abs.24.sex, gender == "M")
-abs.24.f = filter(abs.24.sex, gender == "F")
-abs.24.m = dplyr::select(abs.24.m, -gender)
-abs.24.f = dplyr::select(abs.24.f, -gender)
-abs.24.m = group_by(abs.24.m, age.group)
-abs.24.f = group_by(abs.24.f, age.group)
-
-mag.24.sex = dplyr::select(mag.24.sex, -c(ga:ear, rs))
-mag.24.m = filter(mag.24.sex, gender == "M")
-mag.24.f = filter(mag.24.sex, gender == "F")
-mag.24.m = dplyr::select(mag.24.m, -gender)
-mag.24.f = dplyr::select(mag.24.f, -gender)
-mag.24.m = group_by(mag.24.m, age.group)
-mag.24.f = group_by(mag.24.f, age.group) 
-  
-pha.24.sex = dplyr::select(pha.24.sex, -c(ga:ear, rs))
-pha.24.m = filter(pha.24.sex, gender == "M")
-pha.24.f = filter(pha.24.sex, gender == "F")
-pha.24.m = dplyr::select(pha.24.m, -gender)
-pha.24.f = dplyr::select(pha.24.f, -gender)
-pha.24.m = group_by(pha.24.m, age.group)
-pha.24.f = group_by(pha.24.f, age.group)
-
-abs.median.m <- summarise_all(abs.24.m, funs(median))
-mag.median.m <- summarise_all(mag.24.m, funs(median))
-pha.median.m <- summarise_all(pha.24.m, funs(median))
-
-abs.median.f <- summarise_all(abs.24.f, funs(median))
-mag.median.f <- summarise_all(mag.24.f, funs(median))
-pha.median.f <- summarise_all(pha.24.f, funs(median))
-
-abs.long.m <- melt(abs.median.m, id.vars=c("age.group"))
-abs.long.m <- plyr::rename(abs.long.m, c("age.group"="Age", "variable"="Frequency", "value"="Absorbance"))
-abs.long.m$Frequency <- as.numeric(as.character(abs.long.m$Frequency))
-
-abs.long.f <- melt(abs.median.f, id.vars=c("age.group"))
-abs.long.f <- plyr::rename(abs.long.f, c("age.group"="Age", "variable"="Frequency", "value"="Absorbance"))
-abs.long.f$Frequency <- as.numeric(as.character(abs.long.f$Frequency))
-
-mag.long.m <- melt(mag.median.m, id.vars=c("age.group"))
-mag.long.m <- plyr::rename(mag.long.m, c("age.group"="Age", "variable"="Frequency", "value"="Magnitude"))
-mag.long.m$Frequency <- as.numeric(as.character(mag.long.m$Frequency))
-
-mag.long.f <- melt(mag.median.f, id.vars=c("age.group"))
-mag.long.f <- plyr::rename(mag.long.f, c("age.group"="Age", "variable"="Frequency", "value"="Magnitude"))
-mag.long.f$Frequency <- as.numeric(as.character(mag.long.f$Frequency))
-
-pha.long.m <- melt(pha.median.m, id.vars=c("age.group"))
-pha.long.m <- plyr::rename(pha.long.m, c("age.group"="Age", "variable"="Frequency", "value"="Phase"))
-pha.long.m$Frequency <- as.numeric(as.character(pha.long.m$Frequency))
-
-pha.long.f <- melt(pha.median.f, id.vars=c("age.group"))
-pha.long.f <- plyr::rename(pha.long.f, c("age.group"="Age", "variable"="Frequency", "value"="Phase"))
-pha.long.f$Frequency <- as.numeric(as.character(pha.long.f$Frequency))
-
-abs.long.m$Sex = "Male"
-abs.long.f$Sex = "Female"
-mag.long.m$Sex = "Male"
-mag.long.f$Sex = "Female"
-pha.long.m$Sex = "Male"
-pha.long.f$Sex = "Female"
-
-abs.long.sex = rbind(abs.long.m, abs.long.f)
-mag.long.sex = rbind(mag.long.m, mag.long.f)
-pha.long.sex = rbind(pha.long.m, pha.long.f)
-
-abs.sex.plot <- ggplot(abs.long.sex) +
-  theme_bw() +
-  geom_line(aes(x = Frequency, y = Absorbance, linetype=factor(Sex), colour=Age))  +
-  xlab("Frequency, Hz") +
-  ylab(expression(paste(italic("A")))) +
-  scale_x_log10(expand=c(0, 0), breaks=c(226, 500, 1000, 2000, 4000, 8000))  +
-  scale_y_continuous(expand=c(0, 0), breaks=c(0, 0.2, 0.4, 0.6, 0.8, 1), limits=c(0, 1)) +
-  theme(legend.title=element_blank(), legend.text=element_text(size=10), legend.justification=c(0,1), 
-        legend.position=c(0,1)) +
-  theme(axis.title.y = element_text(vjust = 0.6)) +
-  theme(plot.margin=unit(c(0.5, 0.8, 0.1, 0.5),"lines")) + 
-  theme(legend.position="none")
-#print(abs.sex.plot)  
-
-mag.sex.plot <- ggplot(mag.long.sex) +
-  theme_bw() +
-  geom_line(aes(x = Frequency, y = Magnitude, linetype=factor(Sex), colour=Age))  +
-  xlab("Frequency, Hz") +
-  ylab(expression(paste("|", italic("Y"), "|,", " mmho"))) +
-  scale_x_log10(expand=c(0, 0), breaks=c(226, 500, 1000, 2000, 4000, 8000))  +
-  scale_y_continuous(expand=c(0, 0), breaks=c(0, 2, 4, 6, 8, 10, 12), limits=c(0, 14)) +
-  theme(legend.title=element_blank(), legend.text=element_text(size=10), legend.justification=c(0,1), 
-        legend.position=c(0,1)) +
-  theme(axis.title.y = element_text(vjust = 0.6)) +
-  theme(plot.margin=unit(c(0.5, 0.8, 0.1, 0.5),"lines")) +
-  theme(legend.position = c(0.02, 0.98))
-  #theme(legend.position="none")
-#print(mag.sex.plot)  
-
-pha.sex.plot <- ggplot(pha.long.sex) +
-  theme_bw() +
-  geom_line(aes(x = Frequency, y = Phase, linetype=factor(Sex), colour=Age))  +
-  xlab("Frequency, Hz") +
-  ylab(expression(paste(italic(phi1[italic("Y")])~", degrees"))) +
-  scale_x_log10(expand=c(0, 0), breaks=c(226, 500, 1000, 2000, 4000, 8000))  +
-  scale_y_continuous(expand=c(0, 0), breaks=c(-60, -30, 0, 30, 60, 90), limits=c(-60, 90)) +
-  theme(legend.title=element_blank(), legend.text=element_text(size=10), legend.justification=c(0,1), 
-        legend.position=c(0,1)) +
-  theme(axis.title.y = element_text(vjust = 0.6)) +
-  theme(plot.margin=unit(c(0.5, 0.8, 0.1, 0.5),"lines")) + 
-  theme(legend.position="none")
-#print(pha.sex.plot)  
-
-sex.plot.full <- plot_grid(abs.sex.plot, mag.sex.plot, pha.sex.plot, nrow=3, ncol=1, align = "v", labels = c("A", "B", "C")) 
-ggsave("sex.plot.full.jpeg", sex.plot.full, height=9, width=6, dpi=500)
-
-# ear plot
-abs.24.ear = rbind.data.frame(abs.24.full.0, abs.24.full.6, abs.24.full.12, abs.24.full.18)
-mag.24.ear = rbind.data.frame(mag.24.full.0, mag.24.full.6, mag.24.full.12, mag.24.full.18)
-pha.24.ear = rbind.data.frame(pha.24.full.0, pha.24.full.6, pha.24.full.12, pha.24.full.18)
-
-abs.24.ear$age.group = as.factor(abs.24.ear$age.group)
-mag.24.ear$age.group = as.factor(mag.24.ear$age.group)
-pha.24.ear$age.group = as.factor(pha.24.ear$age.group)
-
-abs.24.ear$age.group = factor(abs.24.ear$age.group, levels = c("Neonate", "6 months", "12 months", "18 months"))
-mag.24.ear$age.group = factor(mag.24.ear$age.group, levels = c("Neonate", "6 months", "12 months", "18 months"))
-pha.24.ear$age.group = factor(pha.24.ear$age.group, levels = c("Neonate", "6 months", "12 months", "18 months"))
-
-abs.24.ear = dplyr::select(abs.24.ear, -c(gender:id.res, rs))
-abs.24.ear$ear = as.factor(abs.24.ear$ear)
-abs.24.ear$ear = relevel(abs.24.ear$ear, "R")
-abs.24.r = filter(abs.24.ear, ear == "R")
-abs.24.l = filter(abs.24.ear, ear == "L")
-abs.24.r = dplyr::select(abs.24.r, -ear)
-abs.24.l = dplyr::select(abs.24.l, -ear)
-abs.24.r = group_by(abs.24.r, age.group)
-abs.24.l = group_by(abs.24.l, age.group)
-
-mag.24.ear = dplyr::select(mag.24.ear, -c(gender:id.res, rs))
-mag.24.ear$ear = as.factor(mag.24.ear$ear)
-mag.24.ear$ear = relevel(mag.24.ear$ear, "R")
-mag.24.r = filter(mag.24.ear, ear == "R")
-mag.24.l = filter(mag.24.ear, ear == "L")
-mag.24.r = dplyr::select(mag.24.r, -ear)
-mag.24.l = dplyr::select(mag.24.l, -ear)
-mag.24.r = group_by(mag.24.r, age.group)
-mag.24.l = group_by(mag.24.l, age.group)
-
-pha.24.ear = dplyr::select(pha.24.ear, -c(gender:id.res, rs))
-pha.24.ear$ear = as.factor(pha.24.ear$ear)
-pha.24.ear$ear = relevel(pha.24.ear$ear, "R")
-pha.24.r = filter(pha.24.ear, ear == "R")
-pha.24.l = filter(pha.24.ear, ear == "L")
-pha.24.r = dplyr::select(pha.24.r, -ear)
-pha.24.l = dplyr::select(pha.24.l, -ear)
-pha.24.r = group_by(pha.24.r, age.group)
-pha.24.l = group_by(pha.24.l, age.group)
-
-abs.median.r <- summarise_all(abs.24.r, funs(median))
-mag.median.r <- summarise_all(mag.24.r, funs(median))
-pha.median.r <- summarise_all(pha.24.r, funs(median))
-
-abs.median.l <- summarise_all(abs.24.l, funs(median))
-mag.median.l <- summarise_all(mag.24.l, funs(median))
-pha.median.l <- summarise_all(pha.24.l, funs(median))
-
-abs.long.r <- melt(abs.median.r, id.vars=c("age.group"))
-abs.long.r <- plyr::rename(abs.long.r, c("age.group"="Age", "variable"="Frequency", "value"="Absorbance"))
-abs.long.r$Frequency <- as.numeric(as.character(abs.long.r$Frequency))
-
-abs.long.l <- melt(abs.median.l, id.vars=c("age.group"))
-abs.long.l <- plyr::rename(abs.long.l, c("age.group"="Age", "variable"="Frequency", "value"="Absorbance"))
-abs.long.l$Frequency <- as.numeric(as.character(abs.long.l$Frequency))
-
-mag.long.r <- melt(mag.median.r, id.vars=c("age.group"))
-mag.long.r <- plyr::rename(mag.long.r, c("age.group"="Age", "variable"="Frequency", "value"="Magnitude"))
-mag.long.r$Frequency <- as.numeric(as.character(mag.long.r$Frequency))
-
-mag.long.l <- melt(mag.median.l, id.vars=c("age.group"))
-mag.long.l <- plyr::rename(mag.long.l, c("age.group"="Age", "variable"="Frequency", "value"="Magnitude"))
-mag.long.l$Frequency <- as.numeric(as.character(mag.long.l$Frequency))
-
-pha.long.r <- melt(pha.median.r, id.vars=c("age.group"))
-pha.long.r <- plyr::rename(pha.long.r, c("age.group"="Age", "variable"="Frequency", "value"="Phase"))
-pha.long.r$Frequency <- as.numeric(as.character(pha.long.r$Frequency))
-
-pha.long.l <- melt(pha.median.l, id.vars=c("age.group"))
-pha.long.l <- plyr::rename(pha.long.l, c("age.group"="Age", "variable"="Frequency", "value"="Phase"))
-pha.long.l$Frequency <- as.numeric(as.character(pha.long.l$Frequency))
-
-abs.long.r$ear = "R"
-abs.long.l$ear = "L"
-mag.long.r$ear = "R"
-mag.long.l$ear = "L"
-pha.long.r$ear = "R"
-pha.long.l$ear = "L"
-
-abs.long.ear = rbind(abs.long.r, abs.long.l)
-mag.long.ear = rbind(mag.long.r, mag.long.l)
-pha.long.ear = rbind(pha.long.r, pha.long.l)
-
-abs.ear.plot <- ggplot(abs.long.ear) +
-  theme_bw() +
-  geom_line(aes(x = Frequency, y = Absorbance, linetype=factor(ear), colour=Age))  +
-  xlab("Frequency, Hz") +
-  ylab(expression(paste(italic("A")))) +
-  scale_x_log10(expand=c(0, 0), breaks=c(226, 500, 1000, 2000, 4000, 8000))  +
-  scale_y_continuous(expand=c(0, 0), breaks=c(0, 0.2, 0.4, 0.6, 0.8, 1), limits=c(0, 1)) +
-  theme(legend.title=element_blank(), legend.text=element_text(size=10), legend.justification=c(0,1), 
-        legend.position=c(0,1)) +
-  theme(axis.title.y = element_text(vjust = 0.6)) +
-  theme(plot.margin=unit(c(0.5, 0.8, 0.1, 0.5),"lines")) + 
-  theme(legend.position="none")
-#print(abs.ear.plot)  
-
-mag.ear.plot <- ggplot(mag.long.ear) +
-  theme_bw() +
-  geom_line(aes(x = Frequency, y = Magnitude, linetype=factor(ear), colour=Age))  +
-  xlab("Frequency, Hz") +
-  ylab(expression(paste("|", italic("Y"), "|,", " mmho"))) +
-  scale_x_log10(expand=c(0, 0), breaks=c(226, 500, 1000, 2000, 4000, 8000))  +
-  scale_y_continuous(expand=c(0, 0), breaks=c(0, 2, 4, 6, 8, 10, 12), limits=c(0, 12)) +
-  theme(legend.title=element_blank(), legend.text=element_text(size=10), legend.justification=c(0,1), 
-        legend.position=c(0,1)) +
-  theme(axis.title.y = element_text(vjust = 0.6)) +
-  theme(plot.margin=unit(c(0.5, 0.8, 0.1, 0.5),"lines")) +
-  theme(legend.position = c(0.05, 0.95))
-  #theme(legend.position="none")
-#print(mag.ear.plot)  
-
-pha.ear.plot <- ggplot(pha.long.ear) +
-  theme_bw() +
-  geom_line(aes(x = Frequency, y = Phase, linetype=factor(ear), colour=Age))  +
-  xlab("Frequency, Hz") +
-  ylab(expression(paste(italic(phi1[italic("Y")])~", degrees"))) +
-  scale_x_log10(expand=c(0, 0), breaks=c(226, 500, 1000, 2000, 4000, 8000))  +
-  scale_y_continuous(expand=c(0, 0), breaks=c(-60, -30, 0, 30, 60, 90), limits=c(-60, 90)) +
-  theme(legend.title=element_blank(), legend.text=element_text(size=10), legend.justification=c(0,1), 
-        legend.position=c(0,1)) +
-  theme(axis.title.y = element_text(vjust = 0.6)) +
-  theme(plot.margin=unit(c(0.5, 0.8, 0.1, 0.5),"lines")) + 
-  theme(legend.position="none")
-#print(pha.ear.plot)  
-
-#ear.plot.full <- plot_grid(abs.ear.plot, mag.ear.plot, pha.ear.plot, nrow=3, ncol=1, align = "v", labels = c("A", "B", "C")) 
-#ggsave("ear.plot.full.jpeg", ear.plot.full, height=9, width=6, dpi=500)
-
-# ethnicity plot
-abs.24.eth = rbind.data.frame(abs.24.full.0, abs.24.full.6, abs.24.full.12, abs.24.full.18)
-mag.24.eth = rbind.data.frame(mag.24.full.0, mag.24.full.6, mag.24.full.12, mag.24.full.18)
-pha.24.eth = rbind.data.frame(pha.24.full.0, pha.24.full.6, pha.24.full.12, pha.24.full.18)
-
-abs.24.eth$age.group = as.factor(abs.24.eth$age.group)
-mag.24.eth$age.group = as.factor(mag.24.eth$age.group)
-pha.24.eth$age.group = as.factor(pha.24.eth$age.group)
-
-abs.24.eth$age.group = factor(abs.24.eth$age.group, levels = c("Neonate", "6 months", "12 months", "18 months"))
-mag.24.eth$age.group = factor(mag.24.eth$age.group, levels = c("Neonate", "6 months", "12 months", "18 months"))
-pha.24.eth$age.group = factor(pha.24.eth$age.group, levels = c("Neonate", "6 months", "12 months", "18 months"))
-
-abs.24.eth = dplyr::select(abs.24.eth, -c(gender:body.length, age.0.hrs:ear, rs))
-abs.24.eth$maternal.ethnicity = as.factor(abs.24.eth$maternal.ethnicity)
-abs.24.eth$maternal.ethnicity[abs.24.eth$maternal.ethnicity == "African"] = NA
-abs.24.eth$maternal.ethnicity[abs.24.eth$maternal.ethnicity == "Oceanian"] = NA
-abs.24.eth$maternal.ethnicity[abs.24.eth$maternal.ethnicity == "South American"] = NA
-abs.24.cauc = filter(abs.24.eth, maternal.ethnicity == "Caucasian")
-abs.24.asian = filter(abs.24.eth, maternal.ethnicity == "Asian")
-abs.24.cauc = dplyr::select(abs.24.cauc, -maternal.ethnicity)
-abs.24.asian = dplyr::select(abs.24.asian, -maternal.ethnicity)
-abs.24.cauc = group_by(abs.24.cauc, age.group)
-abs.24.asian = group_by(abs.24.asian, age.group)
-
-mag.24.eth = dplyr::select(mag.24.eth, -c(gender:body.length, age.0.hrs:ear, rs))
-mag.24.eth$maternal.ethnicity = as.factor(mag.24.eth$maternal.ethnicity)
-mag.24.eth$maternal.ethnicity[mag.24.eth$maternal.ethnicity == "African"] = NA
-mag.24.eth$maternal.ethnicity[mag.24.eth$maternal.ethnicity == "Oceanian"] = NA
-mag.24.eth$maternal.ethnicity[mag.24.eth$maternal.ethnicity == "South American"] = NA
-mag.24.cauc = filter(mag.24.eth, maternal.ethnicity == "Caucasian")
-mag.24.asian = filter(mag.24.eth, maternal.ethnicity == "Asian")
-mag.24.cauc = dplyr::select(mag.24.cauc, -maternal.ethnicity)
-mag.24.asian = dplyr::select(mag.24.asian, -maternal.ethnicity)
-mag.24.cauc = group_by(mag.24.cauc, age.group)
-mag.24.asian = group_by(mag.24.asian, age.group)
-
-pha.24.eth = dplyr::select(pha.24.eth, -c(gender:body.length, age.0.hrs:ear, rs))
-pha.24.eth$maternal.ethnicity = as.factor(pha.24.eth$maternal.ethnicity)
-pha.24.eth$maternal.ethnicity[pha.24.eth$maternal.ethnicity == "African"] = NA
-pha.24.eth$maternal.ethnicity[pha.24.eth$maternal.ethnicity == "Oceanian"] = NA
-pha.24.eth$maternal.ethnicity[pha.24.eth$maternal.ethnicity == "South American"] = NA
-pha.24.cauc = filter(pha.24.eth, maternal.ethnicity == "Caucasian")
-pha.24.asian = filter(pha.24.eth, maternal.ethnicity == "Asian")
-pha.24.cauc = dplyr::select(pha.24.cauc, -maternal.ethnicity)
-pha.24.asian = dplyr::select(pha.24.asian, -maternal.ethnicity)
-pha.24.cauc = group_by(pha.24.cauc, age.group)
-pha.24.asian = group_by(pha.24.asian, age.group)
-
-abs.median.cauc <- summarise_all(abs.24.cauc, funs(median))
-mag.median.cauc <- summarise_all(mag.24.cauc, funs(median))
-pha.median.cauc <- summarise_all(pha.24.cauc, funs(median))
-
-abs.median.asian <- summarise_all(abs.24.asian, funs(median))
-mag.median.asian <- summarise_all(mag.24.asian, funs(median))
-pha.median.asian <- summarise_all(pha.24.asian, funs(median))
-
-abs.long.cauc <- melt(abs.median.cauc, id.vars=c("age.group"))
-abs.long.cauc <- plyr::rename(abs.long.cauc, c("age.group"="Age", "variable"="Frequency", "value"="Absorbance"))
-abs.long.cauc$Frequency <- as.numeric(as.character(abs.long.cauc$Frequency))
-abs.long.asian <- melt(abs.median.asian, id.vars=c("age.group"))
-abs.long.asian <- plyr::rename(abs.long.asian, c("age.group"="Age", "variable"="Frequency", "value"="Absorbance"))
-abs.long.asian$Frequency <- as.numeric(as.character(abs.long.asian$Frequency))
-
-mag.long.cauc <- melt(mag.median.cauc, id.vars=c("age.group"))
-mag.long.cauc <- plyr::rename(mag.long.cauc, c("age.group"="Age", "variable"="Frequency", "value"="Magnitude"))
-mag.long.cauc$Frequency <- as.numeric(as.character(mag.long.cauc$Frequency))
-mag.long.asian <- melt(mag.median.asian, id.vars=c("age.group"))
-mag.long.asian <- plyr::rename(mag.long.asian, c("age.group"="Age", "variable"="Frequency", "value"="Magnitude"))
-mag.long.asian$Frequency <- as.numeric(as.character(mag.long.asian$Frequency))
-
-pha.long.cauc <- melt(pha.median.cauc, id.vars=c("age.group"))
-pha.long.cauc <- plyr::rename(pha.long.cauc, c("age.group"="Age", "variable"="Frequency", "value"="Phase"))
-pha.long.cauc$Frequency <- as.numeric(as.character(pha.long.cauc$Frequency))
-pha.long.asian <- melt(pha.median.asian, id.vars=c("age.group"))
-pha.long.asian <- plyr::rename(pha.long.asian, c("age.group"="Age", "variable"="Frequency", "value"="Phase"))
-pha.long.asian$Frequency <- as.numeric(as.character(pha.long.asian$Frequency))
-
-abs.long.cauc$eth = "Caucasian"
-abs.long.asian$eth = "Asian"
-
-mag.long.cauc$eth = "Caucasian"
-mag.long.asian$eth = "Asian"
-
-pha.long.cauc$eth = "Caucasian"
-pha.long.asian$eth = "Asian"
-
-abs.long.eth = rbind(abs.long.cauc, abs.long.asian)
-mag.long.eth = rbind(mag.long.cauc, mag.long.asian)
-pha.long.eth = rbind(pha.long.cauc, pha.long.asian)
-
-abs.eth.plot <- ggplot(abs.long.eth) +
-  theme_bw() +
-  geom_line(aes(x = Frequency, y = Absorbance, colour=factor(eth)))  +
-  xlab("Frequency, Hz") +
-  ylab(expression(paste(italic("A")))) +
-  scale_x_log10(expand=c(0, 0), breaks=c(226, 500, 1000, 2000, 4000, 8000))  +
-  scale_y_continuous(expand=c(0, 0), breaks=c(0, 0.2, 0.4, 0.6, 0.8, 1), limits=c(-0.1, 1.1)) +
-  theme(legend.title=element_blank(), legend.text=element_text(size=10), legend.justification=c(0,1), 
-        legend.position=c(0,1)) +
-  theme(axis.title.y = element_text(vjust = 0.6)) +
-  theme(plot.margin=unit(c(0.5, 0.8, 0.1, 0.5),"lines")) +
-  theme(legend.position = c(0.02, 0.98)) +
-  facet_wrap(~Age, ncol = 2, scales="free")
-#print(abs.eth.plot)  
-ggsave("abs.eth.plot.jpeg", abs.eth.plot, height=6, width=10, dpi=500)
-
-mag.eth.plot <- ggplot(mag.long.eth) +
-  theme_bw() +
-  geom_line(aes(x = Frequency, y = Magnitude, colour=factor(eth)))  +
-  xlab("Frequency, Hz") +
-  ylab(expression(paste("|", italic("Y"), "|"["t"], ", mmho"))) +
-  scale_x_log10(expand=c(0, 0), breaks=c(226, 500, 1000, 2000, 4000, 8000))  +
-  scale_y_continuous(expand=c(0, 0), breaks=c(0, 2, 4, 6, 8, 10, 12), limits=c(0, 12)) +
-  theme(legend.title=element_blank(), legend.text=element_text(size=10), legend.justification=c(0,1), 
-        legend.position=c(0,1)) +
-  theme(axis.title.y = element_text(vjust = 0.6)) +
-  theme(plot.margin=unit(c(0.5, 0.8, 0.1, 0.5),"lines")) +
-  theme(legend.position = c(0.02, 0.98)) +
-  facet_wrap(~Age, ncol = 2, scales="free")
-print(mag.eth.plot)  
-ggsave("mag.eth.plot.jpeg", mag.eth.plot, height=6, width=10, dpi=500)
-
-pha.eth.plot <- ggplot(pha.long.eth) +
-  theme_bw() +
-  geom_line(aes(x = Frequency, y = Phase, colour=factor(eth)))  +
-  xlab("Frequency, Hz") +
-  ylab(expression(paste(italic(phi1[italic("Y")])~", degrees"))) +
-  scale_x_log10(expand=c(0, 0), breaks=c(226, 500, 1000, 2000, 4000, 8000))  +
-  scale_y_continuous(expand=c(0, 0), breaks=c(-90, -60, -30, 0, 30, 60, 90), limits=c(-95, 95)) +
-  theme(legend.title=element_blank(), legend.text=element_text(size=10), legend.justification=c(0,1), 
-        legend.position=c(0,1)) +
-  theme(axis.title.y = element_text(vjust = 0.6)) +
-  theme(plot.margin=unit(c(0.5, 0.8, 0.1, 0.5),"lines")) +
-  theme(legend.position = c(0.02, 0.75)) +
-  facet_wrap(~Age, ncol = 2, scales="free")
-#print(pha.eth.plot)  
-ggsave("pha.eth.plot.jpeg", pha.eth.plot, height=6, width=10, dpi=500)
-
-################### Plot each age group in terms of G and B (can plot on same plot because same units - mmho)
+# Plot each age group in terms of G and B (can plot on same plot because same units - mmho)
 # newborn
 mag.only.0 = dplyr::select(mag.24.full.0, 11:117)
 pha.only.0 = dplyr::select(pha.24.full.0, 11:117)
@@ -1036,8 +558,8 @@ g.rect.full$Age = factor(g.rect.full$Age, levels = c("Neonate", "6 months", "12 
 b.rect.full$Age = factor(b.rect.full$Age, levels = c("Neonate", "6 months", "12 months", "18 months"))
 
 # conductance on dB scale (see Keefe 1993 discussion)
-#g.db = 10 * log10(g.rect.full$Value)
-#g.rect.full$g.db = g.db
+# g.db = 10 * log10(g.rect.full$Value)
+# g.rect.full$g.db = g.db
 
 g.plot <- ggplot(g.rect.full, aes(x=Frequency, y=Value, group=Age, colour=Age)) +
   geom_line()  +
@@ -1075,12 +597,12 @@ ggsave("gb.plots.jpeg", gb.plots, height=6, width=6, dpi=500)
 Y.plots <- plot_grid(mag.plot.full, pha.plot.full, g.plot, b.plot, nrow=2, ncol=2, align = "v", labels = c("A", "B", "C", "D")) 
 ggsave("Y.plots.jpeg", Y.plots, height=6, width=12, dpi=500)
 
-###### normalized admittance
-# Zc = pc/S = rho * c / S  (needs to be cgs units)
+# normalized admittance
+# Zc = rho * c / S  (needs to be cgs units)
 # calculate ear canal (S) area acoustically
-## S = pc/average resistance
-## first set resistance <0 to 0
-## Caution! Resistance is NOT 1/G - it is G / (G2 + B2) = G / |Y|^2
+# S = rho * c / mean resistance
+# first set resistance <0 to 0
+# Caution! Resistance is NOT 1/G (I should change that wikipedia article) - it is G / (G2 + B2) = G / |Y|^2
 # ear canal length is estimated from group delay so I couldn't do it
 
 # ear canal diameter from keefe 1993
@@ -1132,8 +654,8 @@ r.18.ave = as.data.frame(rowMeans(r.18))
 
 # then calculate S (for each ear)
 # need to use cgs units
-## rho g/cm^3 (rho) and c cm*s^-1 (c)
-## rho and c values are in Benade 1968
+# rho g/cm^3 (rho) and c cm*s^-1 (c)
+# rho and c values are in Benade 1968
 # Table 2 gives the values at 26.85 degrees, with a correction factor
 # rho is (1.1769*10^-3) * (1-0.00335 * (x - 26.85)) - where x is the room temperature
 # so for 22 degrees:
@@ -1185,7 +707,7 @@ ear.canal.plot = ggplot(ear.canal.studies.long, aes(x = Age, y = Area, group = S
   theme_bw()
 #print(ear.canal.plot)
 
-# options(scipen = 999) # to turn of scientific notation
+# options(scipen = 999) # to turn off scientific notation
 # options(scipen = 0) to turn it back on
 # to get diameter go S.area/pi then take sqrt (this is radius) and muliply by 2 for diameter
 (sqrt(s.0.ave/pi)) *2
@@ -1262,7 +784,7 @@ mag.norm.plot <- ggplot(mag.norm.median.long, aes(x=Frequency, y=magnitude, grou
   theme(legend.position = "none")
 #print(mag.norm.plot)
 
-## or on dB scale 
+# or on dB scale 
 mag.0.dB = 10 * log10(mag.only.0.mho)
 mag.0.dB.norm = group_by(mag.only.0.mho, Zc)
 mag.0.dB.norm = mutate_all(mag.0.dB.norm, funs(. * Zc)) # this is Ynorm
@@ -1357,7 +879,7 @@ db.norm.plot <- ggplot(mag.db.norm.long, aes(x=Frequency, y=Value, group=age, co
 #theme(legend.position="none")
 #print(db.norm.plot) 
 
-####### G
+# G
 g.0.only.mho = cbind.data.frame(G.0.mho, Zc.0)
 g.0.only.mho = group_by(g.0.only.mho, Zc)
 g.0.norm = mutate_all(g.0.only.mho, funs(. * Zc)) # this is Ynorm
@@ -1413,7 +935,7 @@ g.norm.plot <- ggplot(g.norm.median.long, aes(x=Frequency, y=G, group=Age, colou
   #theme(legend.position = "none")
 #print(g.norm.plot)
 
-############ B
+# B
 b.0.only.mho = cbind.data.frame(B.0.mho, Zc.0)
 b.0.only.mho = group_by(b.0.only.mho, Zc)
 b.0.norm = mutate_all(b.0.only.mho, funs(. * Zc)) # this is Ynorm
@@ -1473,7 +995,7 @@ gb.norm.plots <- plot_grid(mag.norm.plot, g.norm.plot, b.norm.plot, nrow=3, ncol
                       labels = c("A", "B", "C")) 
 ggsave("gb.norm.plots.jpeg", gb.norm.plots, height=9, width=6, dpi=500)
 
-################### Plot each age group in terms of normalized G and B 
+# Plot each age group in terms of normalized G and B 
 b.norm.median.long2 = b.norm.median.long
 g.norm.median.long2 = g.norm.median.long
 names(b.norm.median.long2) = c("Age", "Frequency", "Ynorm")
@@ -1500,9 +1022,7 @@ rect.plot.norm <- ggplot(y.norm.median.long, aes(x=Frequency, y=Ynorm, group=Y.m
 
 ggsave("rect.plot.norm.jpeg", rect.plot.norm, height=6, width=10, dpi=500)
 
-############################################## Modelling (1/2 OCTAVE) ##########################################################################
-# 1/2 octave for modeling
-
+# 1/2 octave data for modelling ----
 # remove tymp data (all ages) and dems for 6-18 mths
 newborn.2 = newborn.2[,-c(4:7)]
 six.2 = six.2[,-c(3:16)]
@@ -1713,7 +1233,7 @@ summary(unique.18$maternal.ethnicity)
 ears.18 = str(as.factor(abs.2.full.18$ear.id)) # 139 ears at 18 mths
 
 # I didn't save the ages for 6, 12 and 18 mths in the demographics had to go back and save a new file (ages.rda)
-## need to match id.res with the unique.6, unique.12 etc
+# need to match id.res with the unique.6, unique.12 etc
 age.6 = ages[,c(1:2)]
 age.12 = ages[,c(1,3)]
 age.18 = ages[,c(1,4)]
@@ -1817,7 +1337,7 @@ g.2.long$G = g
 b.2.long = dplyr::select(pha.2.long, -Phase)
 b.2.long$B = b
 
-## normalized B and G
+# normalized B and G
 # need to add demographics to G and B 
 # and 1/2 octave average
 g.names = c("g.226",            
@@ -1874,7 +1394,7 @@ mag.names = c("mag.226",
             "mag.6535.66", "mag.6727.17", "mag.6924.29", "mag.7127.19", "mag.7336.03", "mag.7550.99", "mag.7772.26",        
             "mag.8000")
 
-## normalized G
+# normalized G
 g.0.norm = dplyr::select(g.0.norm, -Age)
 names(g.0.norm) = c(g.names)
 g.250 <- transmute(g.0.norm, g.250 = (g.226 +	g.257.33 +	g.280.62 +	g.297.3)/4) # 226 - 297.30
@@ -2004,7 +1524,7 @@ g.norm.2.long$maternal.ethnicity[g.norm.2.long$maternal.ethnicity == "South Amer
 g.norm.2.long$maternal.ethnicity[is.na(g.norm.2.long$maternal.ethnicity)] = "Asian"
 g.norm.2.long$maternal.ethnicity = droplevels(g.norm.2.long$maternal.ethnicity)
 
-## normalized B
+# normalized B
 b.0.norm = dplyr::select(b.0.norm, -Age)
 names(b.0.norm) = c(b.names)
 b.250 <- transmute(b.0.norm, b.250 = (b.226 +	b.257.33 +	b.280.62 +	b.297.3)/4) # 226 - 297.30
@@ -2135,7 +1655,7 @@ b.norm.2.long$maternal.ethnicity[b.norm.2.long$maternal.ethnicity == "South Amer
 b.norm.2.long$maternal.ethnicity[is.na(b.norm.2.long$maternal.ethnicity)] = "Asian"
 b.norm.2.long$maternal.ethnicity = droplevels(b.norm.2.long$maternal.ethnicity)
 
-## normalized mag
+# normalized mag
 mag.0.norm = dplyr::select(mag.0.norm, -Age)
 names(mag.0.norm) = c(mag.names)
 mag.250 <- transmute(mag.0.norm, mag.250 = (mag.226 +	mag.257.33 +	mag.280.62 +	mag.297.3)/4) # 226 - 297.30
@@ -2282,14 +1802,14 @@ ear.canal.df$maternal.ethnicity[ear.canal.df$maternal.ethnicity == "South Americ
 ear.canal.df$maternal.ethnicity[is.na(ear.canal.df$maternal.ethnicity)] = "Asian"
 ear.canal.df$maternal.ethnicity = droplevels(ear.canal.df$maternal.ethnicity)
 
-# modeling ####################
+# modeling ----
 #library(lme4)
 library(lmerTest) # gives p-values
 library(MASS)
 library(rcompanion)
 library(car)
 library(emmeans)
-library(afex) # this package makes the || notation work for factors
+library(afex) # this package makes the || notation work for factors (lmer_alt function)
 options(scipen = 10)
 # (1 | g1/g2); Intercept varying among g1 and g2 within g1. (g1 is the group), for example - (1|school/class) models classes nested within schools
 # start with simple model and increase complexity until no longer improving fit - then compare to null model
@@ -2310,9 +1830,7 @@ abs.2.full.0$maternal.ethnicity = droplevels(abs.2.full.0$maternal.ethnicity)
 age.0.df = group_by(abs.2.full.0, id.res)
 age.0.df = sample_n(age.0.df, 1)
 t.0 = t.test(age.0.hrs ~ maternal.ethnicity, age.0.df)
-t.0.table = data.frame(matrix(vector(), 1, 4,
-                              dimnames=list(c(), c("Age", "Statistic", "DF", "p.value"))),
-                       stringsAsFactors=F) 
+t.0.table = data.frame(matrix(vector(), 1, 4, dimnames=list(c(), c("Age", "Statistic", "DF", "p.value"))), stringsAsFactors=F) 
 t.0.table$Statistic = round(t.0$statistic, 2)
 t.0.table$DF = round(t.0$parameter, 2)
 t.0.table$p.value = round(t.0$p.value, 3)
@@ -2326,9 +1844,7 @@ age.6$maternal.ethnicity[age.6$maternal.ethnicity == "South American"] = "Asian"
 age.6$maternal.ethnicity[is.na(age.6$maternal.ethnicity)] = "Asian"
 age.6$maternal.ethnicity = droplevels(age.6$maternal.ethnicity)
 t.6 = t.test(age.6.mth.in.weeks ~ maternal.ethnicity, age.6)
-t.6.table = data.frame(matrix(vector(), 1, 4,
-                              dimnames=list(c(), c("Age", "Statistic", "DF", "p.value"))),
-                       stringsAsFactors=F) 
+t.6.table = data.frame(matrix(vector(), 1, 4, dimnames=list(c(), c("Age", "Statistic", "DF", "p.value"))), stringsAsFactors=F) 
 t.6.table$Statistic = round(t.6$statistic, 2)
 t.6.table$DF = round(t.6$parameter, 2)
 t.6.table$p.value = round(t.6$p.value, 3)
@@ -2342,9 +1858,7 @@ age.12$maternal.ethnicity[age.12$maternal.ethnicity == "South American"] = "Asia
 age.12$maternal.ethnicity[is.na(age.12$maternal.ethnicity)] = "Asian"
 age.12$maternal.ethnicity = droplevels(age.12$maternal.ethnicity)
 t.12 = t.test(age.12.mth.in.weeks ~ maternal.ethnicity, age.12)
-t.12.table = data.frame(matrix(vector(), 1, 4,
-                              dimnames=list(c(), c("Age", "Statistic", "DF", "p.value"))),
-                       stringsAsFactors=F) 
+t.12.table = data.frame(matrix(vector(), 1, 4, dimnames=list(c(), c("Age", "Statistic", "DF", "p.value"))), stringsAsFactors=F) 
 t.12.table$Statistic = round(t.12$statistic, 2)
 t.12.table$DF = round(t.12$parameter, 2)
 t.12.table$p.value = round(t.12$p.value, 3)
@@ -2358,9 +1872,7 @@ age.18$maternal.ethnicity[age.18$maternal.ethnicity == "South American"] = "Asia
 age.18$maternal.ethnicity[is.na(age.18$maternal.ethnicity)] = "Asian"
 age.18$maternal.ethnicity = droplevels(age.18$maternal.ethnicity)
 t.18 = t.test(age.18.mth.in.weeks ~ maternal.ethnicity, age.18)
-t.18.table = data.frame(matrix(vector(), 1, 4,
-                               dimnames=list(c(), c("Age", "Statistic", "DF", "p.value"))),
-                        stringsAsFactors=F) 
+t.18.table = data.frame(matrix(vector(), 1, 4, dimnames=list(c(), c("Age", "Statistic", "DF", "p.value"))), stringsAsFactors=F) 
 t.18.table$Statistic = round(t.18$statistic, 2)
 t.18.table$DF = round(t.18$parameter, 2)
 t.18.table$p.value = round(t.18$p.value, 3)
@@ -2427,7 +1939,7 @@ ear.canal.lsmean.age_t = mutate_at(ear.canal.lsmean.age_t, vars(mean, lower, upp
 ear.canal.lsmean.age_t = t(ear.canal.lsmean.age_t)
 write.table(ear.canal.lsmean.age_t, file = "ear.canal.emmeans.txt", sep = ",", quote = FALSE, row.names = F)
 
-# abs
+# absorbance
 # first fit with reml = F to compare with anova then final model update with reml = T
 # regarding the random effects - the most correct option is:
 #fit = lmer(Absorbance ~ Frequency * age.group * maternal.ethnicity + gender + ear + (Frequency | id.res/ear.id), abs.2.long, REML = F) 
@@ -2531,10 +2043,7 @@ plot(mag.norm.f) # Heteroscedasticity - transforming may help
 pha.f = lmer(Phase ~ Frequency * age.group * maternal.ethnicity + gender + ear + (1 | id.res/ear.id), pha.2.long, REML = F) 
 plot(pha.f) # boundry effect - passive system bounded by -90 and 90 degrees (keefe 1993)
 
-## PLAN
-# do mag tip and normalized mag
-# then normalized G and B
-
+# PLAN: 1) do mag tip and normalized mag; then 2) normalized G and B (because couldn't model phase)
 # mag at the tip
 mag.f = lmer(Magnitude ~ Frequency * age.group * maternal.ethnicity + gender + ear + (1 | id.res/ear.id), mag.2.long, REML = F)
 plot(mag.f) # Heteroscedasticity - transform
@@ -2755,239 +2264,8 @@ mag.norm.eth.ls <- ggplot(mag.norm.lsmean.eth_t, aes(x=Frequency, y=mean, ymin=l
 #print(mag.norm.eth.ls)
 ggsave("mag.norm.eth.ls.jpeg", mag.norm.eth.ls, height=6, width=10, dpi=500)
 
-### G and B at the tip - not using - just doing mag at the tip (G and B only normalized models)
-## g
-# g.f = lmer(G ~ Frequency * age.group * maternal.ethnicity + gender + ear + (1 | id.res/ear.id), g.2.long, REML = F)
-# plot(g.f) # Heteroscedasticity - transform
-# AIC(g.f)
-# 
-# # transform g
-# g.2.long$G1 = g.2.long$G + 1
-# 
-# # try some different transforms (another option is powertransform function in car package - not sure how to back transfrom though)
-# # log
-# g.2.long$G_log = log(g.2.long$G1)
-# g.f_t.log = lmer(G_log ~ Frequency * age.group * maternal.ethnicity + gender + ear + (1 | id.res/ear.id), g.2.long, REML = F)
-# plot(g.f_t.log) # looks good
-# 
-# # sqrt
-# g.2.long$G_sqrt = sqrt(g.2.long$G1)
-# g.f_t.sqrt = lmer(G_sqrt ~ Frequency * age.group * maternal.ethnicity + gender + ear + (1 | id.res/ear.id), g.2.long, REML = F)
-# plot(g.f_t.sqrt) # log was better
-# 
-# # cube root
-# g.2.long$G_cube = abs(g.2.long$G1)^(1/3)
-# g.f_t.cube = lmer(G_cube ~ Frequency * age.group * maternal.ethnicity + gender + ear + (1 | id.res/ear.id), g.2.long, REML = F)
-# plot(g.f_t.cube) # log was better
-# 
-# # box cox
-# plotNormalHistogram(g.2.long$G) # original
-# # refit positive
-# g.f_pos = lmer(G1 ~ Frequency * age.group * maternal.ethnicity + gender + ear + (1 | id.res/ear.id), g.2.long, REML = F)
-# Box = boxCox(g.f_pos, lambda = seq(-2,2,0.1))
-# 
-# Cox = data.frame(Box$x, Box$y)            # Create a data frame with the results
-# Cox2 = Cox[with(Cox, order(-Cox$Box.y)),] # Order the new data frame by decreasing y
-# Cox2[1,]                                  # Display the lambda with the greatest log likelihood
-# lambda = Cox2[1, "Box.x"]                 # Extract that lambda
-# 
-# g.2.long$G_box = (g.2.long$G ^ lambda - 1)/lambda   # Transform the original data
-# g.f_t.box = lmer(G_box ~ Frequency * age.group * maternal.ethnicity + gender + ear + (1 | id.res/ear.id), g.2.long, REML = F)
-# plot(g.f_t.box) # log was better
-# 
-# # use log transform
-# g.f_t = lmer_alt(G_log ~ Frequency * age.group * maternal.ethnicity + gender + ear + (Frequency || id.res/ear.id), g.2.long, REML = F)
-# plot(g.f_t)
-# AIC(g.f_t) 
-# summary(g.f_t)
-# anova(g.f_t)
-# Anova(g.f_t) 
-# 
-# # test is anova(mod), is the same as anova(mod1, mod2)
-# # model -gender
-# #g.f.sex = lmer(G_log ~ Frequency * age.group * maternal.ethnicity + ear + (1 | id.res/ear.id), g.2.long, REML = F)
-# #anova(g.f.sex, g.f_t) # is the same as the other anova? Yes
-# 
-# # refit model with reml = T
-# g.f.final = update(g.f_t, REML = T)
-# #anova(g.f.final) # should only do anova if reml = F
-# 
-# # post hoc plots
-# g.lsmean.age = emmeans(g.f.final, specs = "Frequency", by = "age.group", type = "response")
-# g.lsmean.age = summary(g.lsmean.age)
-# g.lsmean.age = dplyr::select(g.lsmean.age, -c(4:5))
-# names(g.lsmean.age) = c("Frequency", "Age", "mean", "lower", "upper")
-# g.lsmean.age$Frequency = as.numeric(as.character(g.lsmean.age$Frequency))
-# 
-# # back transform mean and 95% CI
-# g.lsmean.age_t = g.lsmean.age
-# g.lsmean.age_t$mean = exp(g.lsmean.age$mean)
-# g.lsmean.age_t$mean = g.lsmean.age_t$mean - 1
-# g.lsmean.age_t$lower = exp(g.lsmean.age$lower)
-# g.lsmean.age_t$lower = g.lsmean.age_t$lower -1
-# g.lsmean.age_t$upper = exp(g.lsmean.age$upper)
-# g.lsmean.age_t$upper = g.lsmean.age_t$upper - 1
-# 
-# # plot
-# g.plot.lsmean <- ggplot(g.lsmean.age_t, aes(x=Frequency, y=mean, ymin=lower, ymax=upper, group=Age, colour=Age, fill=Age)) +
-#   geom_ribbon(linetype=0 ,alpha = 0.3) +
-#   geom_line()  +
-#   xlab("Frequency, Hz") +
-#   ylab(expression(paste(italic("G"), ", mmho"))) +
-#   scale_x_log10(expand=c(0, 0), breaks=c(250, 500, 1000, 2000, 4000, 8000))  +
-#   scale_y_continuous(expand=c(0, 0), breaks=c(0, 2, 4, 6, 8, 10), limits=c(0, 10)) +
-#   theme_bw() +
-#   theme(legend.title=element_blank(), legend.text=element_text(size=10), legend.justification=c(0,1),
-#         legend.position=c(0.01,0.99)) +
-#   theme(axis.title.y = element_text(vjust = 0.6)) +
-#   theme(plot.margin=unit(c(0.5, 0.8, 0.1, 0.5),"lines"))
-# print(g.plot.lsmean)
-# ggsave("g.ls.jpeg", g.plot.lsmean, height=4, width=6, dpi=500)
-# 
-# # plot ethnicity effect
-# g.lsmean.eth = emmeans(g.f.final, specs = "Frequency", by = c("age.group", "maternal.ethnicity"), type = "response")
-# g.lsmean.eth = summary(g.lsmean.eth)
-# g.lsmean.eth = dplyr::select(g.lsmean.eth, -c(5:6))
-# names(g.lsmean.eth) = c("Frequency", "Age", "Ethnicity", "mean", "lower", "upper")
-# g.lsmean.eth$Frequency = as.numeric(as.character(g.lsmean.eth$Frequency))
-# 
-# g.lsmean.eth_t = g.lsmean.eth
-# g.lsmean.eth_t$mean = exp(g.lsmean.eth$mean)
-# g.lsmean.eth_t$mean = g.lsmean.eth_t$mean - 1
-# g.lsmean.eth_t$lower = exp(g.lsmean.eth$lower)
-# g.lsmean.eth_t$lower = g.lsmean.eth_t$lower -1
-# g.lsmean.eth_t$upper = exp(g.lsmean.eth$upper)
-# g.lsmean.eth_t$upper = g.lsmean.eth_t$upper - 1
-# 
-# g.lsmean.eth_t$Ethnicity = as.character(g.lsmean.eth_t$Ethnicity)
-# g.lsmean.eth_t$Ethnicity[g.lsmean.eth_t$Ethnicity == "Asian"] = "Other"
-# 
-# g.eth.ls <- ggplot(g.lsmean.eth_t, aes(x=Frequency, y=mean, ymin=lower, ymax=upper, group=Ethnicity, colour=Ethnicity, fill=Ethnicity)) +
-#   geom_ribbon(linetype=0 ,alpha = 0.3) +
-#   geom_line()  +
-#   xlab("Frequency, Hz") +
-#   ylab(expression(paste(italic("G"), ", mmho"))) +
-#   scale_x_log10(expand=c(0, 0), breaks=c(250, 500, 1000, 2000, 4000, 8000))  +
-#   scale_y_continuous(expand=c(0, 0), breaks=c(0, 2, 4, 6, 8, 10), limits=c(-0.1, 10.1)) +
-#   theme_bw() +
-#   theme(legend.title=element_blank(), legend.text=element_text(size=10), legend.justification=c(0,1),
-#         legend.position=c(0,1)) +
-#   theme(legend.position = c(0.02, 0.98)) +
-#   theme(axis.title.y = element_text(vjust = 0.6)) +
-#   theme(plot.margin=unit(c(0.5, 0.8, 0.1, 0.5),"lines")) +
-#   facet_wrap(~Age, ncol = 2, scales="free")
-# print(g.eth.ls)
-# ggsave("g.eth.ls.jpeg", g.eth.ls, height=6, width=10, dpi=500)
-# 
-# # plot sex effect
-# g.lsmean.sex = emmeans(g.f.final, specs = "Frequency", by = c("age.group", "gender"), type = "response")
-# g.lsmean.sex = summary(g.lsmean.sex)
-# g.lsmean.sex = dplyr::select(g.lsmean.sex, -c(5:6))
-# names(g.lsmean.sex) = c("Frequency", "Age", "Gender", "mean", "lower", "upper")
-# g.lsmean.sex$Frequency = as.numeric(as.character(g.lsmean.sex$Frequency))
-# 
-# g.lsmean_t = g.lsmean.sex
-# g.lsmean_t$mean = exp(g.lsmean.sex$mean)
-# g.lsmean_t$mean = g.lsmean_t$mean - 1
-# g.lsmean_t$lower = exp(g.lsmean.sex$lower)
-# g.lsmean_t$lower = g.lsmean_t$lower -1
-# g.lsmean_t$upper = exp(g.lsmean.sex$upper)
-# g.lsmean_t$upper = g.lsmean_t$upper - 1
-# 
-# g.lsmean_t$Gender = as.character(g.lsmean_t$Gender)
-# g.lsmean_t$Gender[g.lsmean_t$Gender == "F"] = "Female"
-# g.lsmean_t$Gender[g.lsmean_t$Gender == "M"] = "Male"
-# g.lsmean_t$Gender = as.factor(g.lsmean_t$Gender)
-# 
-# g.sex.ls <- ggplot(g.lsmean_t, aes(x=Frequency, y=mean, ymin=lower, ymax=upper, group=Gender, colour=Gender, fill=Gender)) +
-#   geom_ribbon(linetype=0 ,alpha = 0.3) +
-#   geom_line()  +
-#   xlab("Frequency, Hz") +
-#   ylab(expression(paste(italic("G"), ", mmho"))) +
-#   scale_x_log10(expand=c(0, 0), breaks=c(250, 500, 1000, 2000, 4000, 8000))  +
-#   scale_y_continuous(expand=c(0, 0), breaks=c(0, 2, 4, 6, 8, 10), limits=c(0, 10)) +
-#   theme_bw() +
-#   theme(legend.title=element_blank(), legend.text=element_text(size=10), legend.justification=c(0,1),
-#         legend.position=c(0,1)) +
-#   theme(legend.position = c(0.02, 0.98)) +
-#   theme(axis.title.y = element_text(vjust = 0.6)) +
-#   theme(plot.margin=unit(c(0.5, 0.8, 0.1, 0.5),"lines")) +
-#   facet_wrap(~Age, ncol = 2, scales="free")
-# print(g.sex.ls)
-# ggsave("g.sex.ls.jpeg", g.sex.ls, height=6, width=10, dpi=500)
-# 
-# ## another option could be to do glmm with gamma (log) link - but needs to be positive, so need to set =<0 to 0.0001
-# ## HOWEVER see https://bbolker.github.io/mixedmodels-misc/glmmFAQ.html#testing-for-overdispersioncomputing-overdispersion-factor
-# ## GAMMA is difficult to implement GLMM - can't do it
-# 
-# ## b
-# b.f = lmer_alt(B ~ Frequency * age.group * maternal.ethnicity + gender + ear + (Frequency || id.res/ear.id), b.2.long, REML = F)
-# plot(b.f) # not too bad - the gap is just where there are no values
-# AIC(b.f)
-# anova(b.f)
-# Anova(b.f) # main effect ethnicity not significant, but age * interaction is (same as G)
-#            # sex not significant (for G it was, but abs wasn't also)
-# 
-# # refit model with reml = T
-# b.f.final = update(b.f, REML = T)
-# 
-# # post hoc plots
-# b.lsmean.age = emmeans(b.f.final, specs = "Frequency", by = "age.group", type = "response")
-# b.lsmean.age = summary(b.lsmean.age)
-# b.lsmean.age = dplyr::select(b.lsmean.age, -c(4:5))
-# names(b.lsmean.age) = c("Frequency", "Age", "mean", "lower", "upper")
-# b.lsmean.age$Frequency = as.numeric(as.character(b.lsmean.age$Frequency))
-# 
-# # plot
-# b.plot.lsmean <- ggplot(b.lsmean.age, aes(x=Frequency, y=mean, ymin=lower, ymax=upper, group=Age, colour=Age, fill=Age)) +
-#   geom_ribbon(linetype=0 ,alpha = 0.3) +
-#   geom_line()  +
-#   xlab("Frequency, Hz") +
-#   ylab(expression(paste(italic("B"), ", mmho"))) +
-#   scale_x_log10(expand=c(0, 0), breaks=c(250, 500, 1000, 2000, 4000, 8000))  +
-#   scale_y_continuous(expand=c(0, 0), breaks=c(-4, -2, 0, 2, 4, 6, 8), limits=c(-4, 8)) +
-#   theme_bw() +
-#   theme(legend.title=element_blank(), legend.text=element_text(size=10), legend.justification=c(0,1),
-#         legend.position=c(0.01,0.99)) +
-#   theme(axis.title.y = element_text(vjust = 0.6)) +
-#   theme(plot.margin=unit(c(0.5, 0.8, 0.1, 0.5),"lines")) +
-#   theme(legend.position = "none")
-# #print(b.plot.lsmean)
-# #ggsave("b.ls.jpeg", b.plot.lsmean, height=4, width=6, dpi=500)
-# 
-# ## multiplot - A, G, B
-# ls.plot.full <- plot_grid(abs.plot.lsmean, g.plot.lsmean, b.plot.lsmean, nrow=3, ncol=1, align = "v", labels = c("A", "B", "C"))
-# ggsave("ls.plot.full.jpeg", ls.plot.full, height=9, width=6, dpi=500)
-# 
-# # plot ethnicity effect
-# b.lsmean.eth = emmeans(b.f.final, specs = "Frequency", by = c("age.group", "maternal.ethnicity"), type = "response")
-# b.lsmean.eth = summary(b.lsmean.eth)
-# b.lsmean.eth = dplyr::select(b.lsmean.eth, -c(5:6))
-# names(b.lsmean.eth) = c("Frequency", "Age", "Ethnicity", "mean", "lower", "upper")
-# b.lsmean.eth$Frequency = as.numeric(as.character(b.lsmean.eth$Frequency))
-# 
-# b.lsmean.eth$Ethnicity = as.character(b.lsmean.eth$Ethnicity)
-# b.lsmean.eth$Ethnicity[b.lsmean.eth$Ethnicity == "Asian"] = "Other"
-# 
-# b.eth.ls <- ggplot(b.lsmean.eth, aes(x=Frequency, y=mean, ymin=lower, ymax=upper, group=Ethnicity, colour=Ethnicity, fill=Ethnicity)) +
-#   geom_ribbon(linetype=0 ,alpha = 0.3) +
-#   geom_line()  +
-#   xlab("Frequency, Hz") +
-#   ylab(expression(paste(italic("B"), ", mmho"))) +
-#   scale_x_log10(expand=c(0, 0), breaks=c(250, 500, 1000, 2000, 4000, 8000))  +
-#   scale_y_continuous(expand=c(0, 0), breaks=c(-4, -2, 0, 2, 4, 6, 8), limits=c(-4, 8)) +
-#   theme_bw() +
-#   theme(legend.title=element_blank(), legend.text=element_text(size=10), legend.justification=c(0,1),
-#         legend.position=c(0,1)) +
-#   theme(legend.position = c(0.02, 0.98)) +
-#   theme(axis.title.y = element_text(vjust = 0.6)) +
-#   theme(plot.margin=unit(c(0.5, 0.8, 0.1, 0.5),"lines")) +
-#   facet_wrap(~Age, ncol = 2, scales="free")
-# #print(b.eth.ls)
-# ggsave("b.eth.ls.jpeg", b.eth.ls, height=6, width=10, dpi=500)
-
-####### Normalized G and B
-## g.norm
+# Normalized G and B
+# g.norm
 # the random effect for the final model is Frequency || id.res/ear.id - but it takes a long time to run, so just use the simplified initially
 g.norm.f = lmer(g.norm ~ Frequency * age.group * maternal.ethnicity + gender + ear + (1 | id.res/ear.id), g.norm.2.long, REML = F) 
 plot(g.norm.f) # Heteroscedasticity - transform
@@ -3109,44 +2387,7 @@ g.norm.eth.ls <- ggplot(g.norm.lsmean.eth_t, aes(x=Frequency, y=mean, ymin=lower
 #print(g.norm.eth.ls)
 ggsave("g.norm.eth.ls.jpeg", g.norm.eth.ls, height=6, width=10, dpi=500)
 
-# plot sex effect
-# g.norm.lsmean.sex = emmeans(g.norm.f.final, specs = "Frequency", by = c("age.group", "gender"), type = "response")
-# g.norm.lsmean.sex = summary(g.norm.lsmean.sex)
-# g.norm.lsmean.sex = dplyr::select(g.norm.lsmean.sex, -c(5:6))
-# names(g.norm.lsmean.sex) = c("Frequency", "Age", "Gender", "mean", "lower", "upper")
-# g.norm.lsmean.sex$Frequency = as.numeric(as.character(g.norm.lsmean.sex$Frequency))
-# 
-# g.norm.lsmean_t = g.norm.lsmean.sex
-# g.norm.lsmean_t$mean = invBoxCox(g.norm.lsmean.sex$mean, lambda = lambda)
-# g.norm.lsmean_t$mean = g.norm.lsmean_t$mean - 1
-# g.norm.lsmean_t$lower = invBoxCox(g.norm.lsmean.sex$lower, lambda = lambda)
-# g.norm.lsmean_t$lower = g.norm.lsmean_t$lower -1
-# g.norm.lsmean_t$upper = invBoxCox(g.norm.lsmean.sex$upper, lambda = lambda)
-# g.norm.lsmean_t$upper = g.norm.lsmean_t$upper - 1
-# 
-# g.norm.lsmean_t$Gender = as.character(g.norm.lsmean_t$Gender)
-# g.norm.lsmean_t$Gender[g.norm.lsmean_t$Gender == "F"] = "Female"
-# g.norm.lsmean_t$Gender[g.norm.lsmean_t$Gender == "M"] = "Male"
-# g.norm.lsmean_t$Gender = as.factor(g.norm.lsmean_t$Gender)
-# 
-# g.norm.sex.ls <- ggplot(g.norm.lsmean_t, aes(x=Frequency, y=mean, ymin=lower, ymax=upper, group=Gender, colour=Gender, fill=Gender)) +
-#   geom_ribbon(linetype=0 ,alpha = 0.3) +
-#   geom_line()  +
-#   xlab("Frequency, Hz") +
-#   ylab(expression(paste("Normalized ", italic("G")))) +
-#   scale_x_log10(expand=c(0, 0), breaks=c(250, 500, 1000, 2000, 4000, 8000))  +
-#   scale_y_continuous(expand=c(0, 0), breaks=c(0, 0.5, 1, 1.5), limits=c(0, 1.5)) +
-#   theme_bw() +
-#   theme(legend.title=element_blank(), legend.text=element_text(size=10), legend.justification=c(0,1), 
-#         legend.position=c(0,1)) +
-#   theme(legend.position = c(0.02, 0.98)) +
-#   theme(axis.title.y = element_text(vjust = 0.6)) +
-#   theme(plot.margin=unit(c(0.5, 0.8, 0.1, 0.5),"lines")) +
-#   facet_wrap(~Age, ncol = 2, scales="free")
-# print(g.norm.sex.ls)
-# ggsave("g.norm.sex.ls.jpeg", g.norm.sex.ls, height=6, width=10, dpi=500)
-
-### B norm
+# B norm
 b.norm.f = lmer(b.norm ~ Frequency * age.group * maternal.ethnicity + gender + ear + (1 | id.res/ear.id), b.norm.2.long, REML = F) 
 plot(b.norm.f) 
 AIC(b.norm.f)
@@ -3271,74 +2512,7 @@ ggsave("ls.plots.abs.mag.jpeg", ls.plot.ay, height=9, width=6, dpi=500)
 ls.plot.gb <- plot_grid(g.norm.plot.lsmean, b.norm.plot.lsmean, nrow=2, ncol=1, align = "v", labels = c("A", "B")) 
 ggsave("ls.plots.GB.jpeg", ls.plot.gb, height=6, width=6, dpi=500)
 
-###################################
-# # then convert rect lsmeans to polar and plot
-# # didn't work
-# #mag = sqrt g^2 + b^2
-# #pha = arctan g/b (or should it be b/g ?)
-
-# mag.lsmean.age = g.lsmean.age_t
-# mag.lsmean.age$mean = sqrt(g.lsmean.age_t$mean^2 + b.lsmean.age$mean^2)
-# mag.lsmean.age$lower = sqrt(g.lsmean.age_t$lower^2 + b.lsmean.age$lower^2)
-# mag.lsmean.age$upper = sqrt(g.lsmean.age_t$upper^2 + b.lsmean.age$upper^2)
-# # 
-# pha.lsmean.age = b.lsmean.age
-# # # 180/pi * to convert to degrees
-# pha.lsmean.age$mean = 180 / pi * atan2(b.lsmean.age$mean, g.lsmean.age_t$mean) # atan2(y, x) gives phase angle for x + iy (so susceptance should be first argument)
-# pha.lsmean.age$lower = 180 / pi * atan2(b.lsmean.age$lower, g.lsmean.age_t$lower)
-# pha.lsmean.age$upper = 180 / pi * atan2(b.lsmean.age$upper, g.lsmean.age_t$upper)
-# 
-# could try plotting the 1/2 octave raw data to compare with these plots
-# mag.plot.lsmean <- ggplot(mag.lsmean.age, aes(x=Frequency, y=mean, ymin=lower, ymax=upper, group=Age, colour=Age, fill=Age)) +
-#   geom_ribbon(linetype=0 ,alpha = 0.3) +
-#   geom_line()  +
-#   xlab("Frequency, Hz") +
-#   ylab(expression(paste("|", italic("Y"), "|,", " mmho"))) +
-#   scale_x_log10(expand=c(0, 0), breaks=c(250, 500, 1000, 2000, 4000, 8000))  +
-#   scale_y_continuous(expand=c(0, 0), breaks=c(0, 2, 4, 6, 8, 10, 12), limits=c(0, 12)) +
-#   theme_bw() +
-#   theme(legend.title=element_blank(), legend.text=element_text(size=10), legend.justification=c(0,1),
-#         legend.position=c(0.01,0.99)) +
-#   theme(axis.title.y = element_text(vjust = 0.6)) +
-#   theme(plot.margin=unit(c(0.5, 0.8, 0.1, 0.5),"lines"))
-# print(mag.plot.lsmean) # something wrong
-# 
-# pha.plot.lsmean <- ggplot(pha.lsmean.age, aes(x=Frequency, y=mean, ymin=lower, ymax=upper, group=Age, colour=Age, fill=Age)) +
-#   geom_ribbon(linetype=0 ,alpha = 0.3) +
-#   geom_line()  +
-#   xlab("Frequency, Hz") +
-#   ylab(expression(paste(italic(phi1[italic("Y")])~", degrees"))) +
-#   scale_x_log10(expand=c(0, 0), breaks=c(226, 500, 1000, 2000, 4000, 8000), limits=c(250,8000))  +
-#   scale_y_continuous(expand=c(0, 0), breaks=c(-60, -30, 0, 30, 60, 90), limits=c(-60, 90)) +
-#   theme_bw() +
-#   theme(legend.title=element_blank(), legend.text=element_text(size=10), legend.justification=c(0,1),
-#         legend.position=c(0.04,0.23)) +
-#   theme(axis.title.y = element_text(vjust = 0.6)) +
-#   theme(plot.margin=unit(c(0.5, 0.8, 0.1, 0.5),"lines"))
-# print(pha.plot.lsmean)
-
-# 2 1/2 oct to compare the mag
-# mag.2.temp = mag.2.full
-# mag.2.temp = dplyr::select(mag.2.temp, -c(1:10,22,23))
-# mag.2.temp <- group_by(mag.2.temp, age.group)
-# mag.median.2 <- summarise_all(mag.2.temp, funs(median))
-# mag.median.long.2 <- gather(mag.median.2, Frequency, magnitude, 2:12)
-# mag.median.long.2$Frequency = as.numeric(mag.median.long.2$Frequency)
-# 
-# mag.2.plot <- ggplot(mag.median.long.2, aes(x=Frequency, y=magnitude, group=age.group, colour=age.group)) +
-#   geom_line()  +
-#   xlab("Frequency, Hz") +
-#   ylab(expression(paste("|", italic("Y"), "|,", " mmho"))) +
-#   scale_x_log10(expand=c(0, 0), breaks=c(250, 500, 1000, 2000, 4000, 8000))  +
-#   scale_y_continuous(expand=c(0, 0), breaks=c(0, 2, 4, 6, 8, 10, 12), limits=c(0, 12)) +
-#   theme_bw() +
-#   theme(legend.title=element_blank(), legend.text=element_text(size=10), legend.justification=c(0,1), 
-#         legend.position=c(0.01,0.99)) +
-#   theme(axis.title.y = element_text(vjust = 0.6)) +
-#   theme(plot.margin=unit(c(0.5, 0.8, 0.1, 0.5),"lines")) 
-# print(mag.2.plot) # it is different - sth wrong with the ls mag conversion
-
-############################################## COMPARE OUR DATA AGAINST OTHER STUDIES ###################################################################
+# Compare our data against other studies
 # import normative data and plot against my data
 # plot 24 octave and 1/2 octave lsmeans (can compart hunter lsmeans)
 
@@ -3616,9 +2790,6 @@ pha.other.studies.plot <- ggplot(pha.other.studies, aes(x=Frequency, y=Phase, gr
   theme_bw() +
   theme(axis.title.y = element_text(vjust = 0.6)) +
   theme(legend.title=element_blank()) + #, legend.justification=c(1,0), legend.position=c(0,1)) +
-  #theme(plot.margin=unit(c(0.5, 0.8, 0.1, 0.5),"lines")) +
-  #ggtitle("Neonate") +
-  #theme(plot.title = element_text(hjust = 0.5)) +
   facet_wrap(~Age, ncol = 2, scales="free", drop = T)
 pha.other.studies.plot
 ggsave("pha.other.studies.jpeg", pha.other.studies.plot, height=6, width=12, dpi=500)
