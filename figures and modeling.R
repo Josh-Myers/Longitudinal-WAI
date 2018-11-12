@@ -237,9 +237,7 @@ wai.24.full = filter(wai.24, rs0=="pass" & rs6=="pass" | rs12=="pass" | rs18=="p
 
 # create a df of ears that were tested and passed all of the follow up sessions
 attended.all = filter(wai.24, rs0=="pass" & rs6=="pass" & rs12=="pass" & rs18=="pass")
-setwd("/Users/Joshua/Dropbox/R/RProjects/WidebandAbsorbance/DataSets and scripts/WAI norms app/data frames")
 saveRDS(attended.all, "attended.all.rds")
-setwd("/Users/Joshua/Dropbox/R/RProjects/WidebandAbsorbance/Working directory")
 
 # subset wai for each age group and remove the worst outliers (abs < -0.5 at freqs <8000 Hz)
 wai.24.full.0 = dplyr::select(wai.24.full, gender:pha0.8000, rs0)
