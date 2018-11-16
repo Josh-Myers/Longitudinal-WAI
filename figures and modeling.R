@@ -1836,7 +1836,7 @@ lsm.basis.glmmTMB <- function (object, trms, xlev, grid, vcov.,
        dfargs = dfargs, misc = misc)
 }
 
-#library(lme4)
+library(lme4)
 library(lmerTest)
 library(MASS)
 library(rcompanion)
@@ -1846,7 +1846,7 @@ library(glmmTMB)
 # packageurl <- "https://cran.r-project.org/src/contrib/Archive/lsmeans/lsmeans_2.25.tar.gz"
 # install.packages(packageurl, repos=NULL, type="source")
 library(lsmeans)
-library(afex) # this makes the || notation work for factors
+#library(afex) # this makes the || notation work for factors
 options(scipen = 10)
 
 # (1 | g1/g2); Intercept varying among g1 and g2 within g1. (g1 is the group), for example - (1|school/class) models classes nested within schools
@@ -2022,8 +2022,9 @@ write.table(ear.canal.lsmean.age_t, file = "ear.canal.lsmeans.txt", sep = ",", q
 # however - need a massive dataset to fit this - another option is to use afex package (see || in the random part)
 #fit = lmer_alt(Absorbance ~ Frequency * age.group * maternal.ethnicity + gender + ear + (Frequency || id.res/ear.id), abs.2.long, REML = F) 
 # however, for my absorbance, I am using glmmTMB - which isn't supported by afex (it only supports glmer)
-# You can remove the correlation parameters manually (https://rpubs.com/Reinhold/22193) - which I tried - but the model failed to converge
-# so was still too complex - therefore, just use the simplified 1|id.res/ear.id - which assumes compound symmetry:
+# You can remove the correlation parameters manually (https://rpubs.com/Reinhold/22193) - which I tried
+# However, all models (lmer_alt with afex and glmmTMB) had convergece issues
+# still too complex - therefore, just use the simplified 1|id.res/ear.id - which assumes compound symmetry:
 
 # linear model
 abs.f = lmer(Absorbance ~ Frequency * age.group + gender + maternal.ethnicity + ear + (1 | id.res/ear.id), abs.2.long, REML = F)
@@ -2239,55 +2240,55 @@ mag.f_t.box = lmer(mag_box ~ Frequency * age.group * maternal.ethnicity + gender
 plot(mag.f_t.box) # log was better
 
 # use log transform
-mag.f_t = lmer_alt(mag_log ~ Frequency * age.group * maternal.ethnicity + gender + ear + (Frequency || id.res/ear.id), mag.2.long, REML = F)
+mag.f_t = lmer(mag_log ~ Frequency * age.group * maternal.ethnicity + gender + ear + (1 | id.res/ear.id), mag.2.long, REML = F)
 plot(mag.f_t)
 AIC(mag.f_t) 
 summary(mag.f_t)
 anova(mag.f_t)
 
 # test if main effects are signficant
-mag.freq = lmer_alt(mag_log ~ age.group * maternal.ethnicity + gender + ear + (Frequency || id.res/ear.id), mag.2.long, REML = FALSE)
+mag.freq = lmer(mag_log ~ age.group * maternal.ethnicity + gender + ear + (1 | id.res/ear.id), mag.2.long, REML = FALSE)
 mag.freq.anova = anova(mag.freq, mag.f_t)
 mag.freq.anova = mag.freq.anova[2,6:8]
 
-mag.age = lmer_alt(mag_log ~ Frequency * maternal.ethnicity + gender + ear + (Frequency || id.res/ear.id), mag.2.long, REML = FALSE)
+mag.age = lmer(mag_log ~ Frequency * maternal.ethnicity + gender + ear + (1 | id.res/ear.id), mag.2.long, REML = FALSE)
 mag.age.anova = anova(mag.age, mag.f_t)
 mag.age.anova = mag.age.anova[2,6:8]
 
-mag.eth = lmer_alt(mag_log ~ Frequency * age.group + gender + ear + (Frequency || id.res/ear.id), mag.2.long, REML = FALSE)
+mag.eth = lmer(mag_log ~ Frequency * age.group + gender + ear + (1 | id.res/ear.id), mag.2.long, REML = FALSE)
 mag.eth.anova = anova(mag.eth, mag.f_t)
 mag.eth.anova = mag.eth.anova[2,6:8]
 
-mag.ear = lmer_alt(mag_log ~ Frequency * age.group * maternal.ethnicity + gender + (Frequency || id.res/ear.id), mag.2.long, REML = FALSE)
+mag.ear = lmer(mag_log ~ Frequency * age.group * maternal.ethnicity + gender + (1 | id.res/ear.id), mag.2.long, REML = FALSE)
 mag.ear.anova = anova(mag.ear, mag.f_t)
 mag.ear.anova = mag.ear.anova[2,6:8]
 
-mag.sex = lmer_alt(mag_log ~ Frequency * age.group * maternal.ethnicity + ear + (Frequency || id.res/ear.id), mag.2.long, REML = FALSE)
+mag.sex = lmer(mag_log ~ Frequency * age.group * maternal.ethnicity + ear + (1 | id.res/ear.id), mag.2.long, REML = FALSE)
 mag.sex.anova = anova(mag.sex, mag.f_t) 
 mag.sex.anova = mag.sex.anova[2,6:8]
 
 ## and then interactions
 # test age x ethnicity interaction
-mag.age.eth = lmer_alt(mag_log ~ Frequency * (maternal.ethnicity + age.group) + gender + ear + (Frequency || id.res/ear.id), mag.2.long, REML = FALSE)
+mag.age.eth = lmer(mag_log ~ Frequency * (maternal.ethnicity + age.group) + gender + ear + (1 | id.res/ear.id), mag.2.long, REML = FALSE)
 mag.age.eth.anova = anova(mag.age.eth, mag.f_t) 
 mag.age.eth.anova = mag.age.eth.anova[2,6:8]
 
 # test freq x age interaction
-mag.freq.age = lmer_alt(mag_log ~ Frequency * maternal.ethnicity + age.group + age.group:maternal.ethnicity + gender + ear + (Frequency || id.res/ear.id), mag.2.long, REML = FALSE)
+mag.freq.age = lmer(mag_log ~ Frequency * maternal.ethnicity + age.group + age.group:maternal.ethnicity + gender + ear + (1 | id.res/ear.id), mag.2.long, REML = FALSE)
 mag.freq.age.anova = anova(mag.freq.age, mag.f_t) 
 mag.freq.age.anova = mag.freq.age.anova[2,6:8]
 
 # test frequency x ethnicity interaction
-mag.freq.eth = lmer_alt(mag_log ~ Frequency * age.group + maternal.ethnicity + age.group:maternal.ethnicity + gender + ear + (Frequency || id.res/ear.id), mag.2.long, REML = FALSE)
+mag.freq.eth = lmer(mag_log ~ Frequency * age.group + maternal.ethnicity + age.group:maternal.ethnicity + gender + ear + (1 | id.res/ear.id), mag.2.long, REML = FALSE)
 mag.freq.eth.anova = anova(mag.freq.eth, mag.f_t) 
 mag.freq.eth.anova = mag.freq.eth.anova[2,6:8]
 
 #Freq:maternal.ethnicity:age
-mag.freq.eth.age = lmer_alt(mag_log ~ Frequency + maternal.ethnicity + age.group + 
+mag.freq.eth.age = lmer(mag_log ~ Frequency + maternal.ethnicity + age.group + 
                               Frequency:maternal.ethnicity + 
                               age.group:maternal.ethnicity + 
                               age.group:Frequency +
-                              gender + ear + (Frequency || id.res/ear.id), mag.2.long, REML = FALSE)
+                              gender + ear + (1 | id.res/ear.id), mag.2.long, REML = FALSE)
 mag.freq.age.eth.anova = anova(mag.freq.eth.age, mag.f_t) 
 mag.freq.age.eth.anova = mag.freq.age.eth.anova[2,6:8]
 
@@ -2403,57 +2404,57 @@ mag.norm.f_t.box = lmer(mag_box ~ Frequency * age.group * maternal.ethnicity + g
 plot(mag.norm.f_t.box) 
 
 # use log
-mag.norm.f_t = lmer_alt(mag_log ~ Frequency * age.group * maternal.ethnicity + gender + ear + (Frequency || id.res/ear.id), mag.norm.2.long, REML = F)
+mag.norm.f_t = lmer(mag_log ~ Frequency * age.group * maternal.ethnicity + gender + ear + (1 | id.res/ear.id), mag.norm.2.long, REML = F)
 plot(mag.norm.f_t)
 AIC(mag.norm.f_t) 
 summary(mag.norm.f_t)
 anova(mag.norm.f_t)
 
 # test if main effects are signficant
-mag.norm.freq = lmer_alt(mag_log ~ age.group * maternal.ethnicity + gender + ear + (Frequency || id.res/ear.id), mag.norm.2.long, REML = FALSE)
+mag.norm.freq = lmer(mag_log ~ age.group * maternal.ethnicity + gender + ear + (1 | id.res/ear.id), mag.norm.2.long, REML = FALSE)
 mag.norm.freq.anova = anova(mag.norm.freq, mag.norm.f_t)
 mag.norm.freq.anova = mag.norm.freq.anova[2,6:8]
 
-mag.norm.age = lmer_alt(mag_log ~ Frequency * maternal.ethnicity + gender + ear + (Frequency || id.res/ear.id), mag.norm.2.long, REML = FALSE)
+mag.norm.age = lmer(mag_log ~ Frequency * maternal.ethnicity + gender + ear + (1 | id.res/ear.id), mag.norm.2.long, REML = FALSE)
 mag.norm.age.anova = anova(mag.norm.age, mag.norm.f_t)
 mag.norm.age.anova = mag.norm.age.anova[2,6:8]
 
-mag.norm.eth = lmer_alt(mag_log ~ Frequency * age.group + gender + ear + (Frequency || id.res/ear.id), mag.norm.2.long, REML = FALSE)
+mag.norm.eth = lmer(mag_log ~ Frequency * age.group + gender + ear + (1 | id.res/ear.id), mag.norm.2.long, REML = FALSE)
 mag.norm.eth.anova = anova(mag.norm.eth, mag.norm.f_t)
 mag.norm.eth.anova = mag.norm.eth.anova[2,6:8]
 
-mag.norm.ear = lmer_alt(mag_log ~ Frequency * age.group * maternal.ethnicity + gender + (Frequency || id.res/ear.id), mag.norm.2.long, REML = FALSE)
+mag.norm.ear = lmer(mag_log ~ Frequency * age.group * maternal.ethnicity + gender + (1 | id.res/ear.id), mag.norm.2.long, REML = FALSE)
 mag.norm.ear.anova = anova(mag.norm.ear, mag.norm.f_t)
 mag.norm.ear.anova = mag.norm.ear.anova[2,6:8]
 
-mag.norm.sex = lmer_alt(mag_log ~ Frequency * age.group * maternal.ethnicity + ear + (Frequency || id.res/ear.id), mag.norm.2.long, REML = FALSE)
+mag.norm.sex = lmer(mag_log ~ Frequency * age.group * maternal.ethnicity + ear + (1 | id.res/ear.id), mag.norm.2.long, REML = FALSE)
 mag.norm.sex.anova = anova(mag.norm.sex, mag.norm.f_t) 
 mag.norm.sex.anova = mag.norm.sex.anova[2,6:8]
 
 ## and then interactions
 # test age x ethnicity interaction
-mag.norm.age.eth = lmer_alt(mag_log ~ Frequency * (maternal.ethnicity + age.group) + gender + ear + (Frequency || id.res/ear.id), mag.norm.2.long, REML = FALSE)
+mag.norm.age.eth = lmer(mag_log ~ Frequency * (maternal.ethnicity + age.group) + gender + ear + (1 | id.res/ear.id), mag.norm.2.long, REML = FALSE)
 mag.norm.age.eth.anova = anova(mag.norm.age.eth, mag.norm.f_t) 
 mag.norm.age.eth.anova = mag.norm.age.eth.anova[2,6:8]
 
 # test freq x age interaction
-mag.norm.freq.age = lmer_alt(mag_log ~ Frequency * maternal.ethnicity + age.group + age.group:maternal.ethnicity +
-                               gender + ear + (Frequency || id.res/ear.id), mag.norm.2.long, REML = FALSE)
+mag.norm.freq.age = lmer(mag_log ~ Frequency * maternal.ethnicity + age.group + age.group:maternal.ethnicity +
+                               gender + ear + (1 | id.res/ear.id), mag.norm.2.long, REML = FALSE)
 mag.norm.freq.age.anova = anova(mag.norm.freq.age, mag.norm.f_t) 
 mag.norm.freq.age.anova = mag.norm.freq.age.anova[2,6:8]
 
 # test frequency x ethnicity interaction
-mag.norm.freq.eth = lmer_alt(mag_log ~ Frequency * age.group + maternal.ethnicity + age.group:maternal.ethnicity +
-                               gender + ear + (Frequency || id.res/ear.id), mag.norm.2.long, REML = FALSE)
+mag.norm.freq.eth = lmer(mag_log ~ Frequency * age.group + maternal.ethnicity + age.group:maternal.ethnicity +
+                               gender + ear + (1 | id.res/ear.id), mag.norm.2.long, REML = FALSE)
 mag.norm.freq.eth.anova = anova(mag.norm.freq.eth, mag.norm.f_t) 
 mag.norm.freq.eth.anova = mag.norm.freq.eth.anova[2,6:8]
 
 #Freq:maternal.ethnicity:age
-mag.norm.freq.eth.age = lmer_alt(mag_log ~ Frequency + maternal.ethnicity + age.group + 
+mag.norm.freq.eth.age = lmer(mag_log ~ Frequency + maternal.ethnicity + age.group + 
                                    Frequency:maternal.ethnicity + 
                                    age.group:maternal.ethnicity + 
                                    age.group:Frequency +
-                                   gender + ear + (Frequency || id.res/ear.id), mag.norm.2.long, REML = FALSE)
+                                   gender + ear + (1 | id.res/ear.id), mag.norm.2.long, REML = FALSE)
 mag.norm.freq.age.eth.anova = anova(mag.norm.freq.eth.age, mag.norm.f_t) 
 mag.norm.freq.age.eth.anova = mag.norm.freq.age.eth.anova[2,6:8]
 
@@ -2573,7 +2574,7 @@ g.f_t.box = lmer(G_box ~ Frequency * age.group * maternal.ethnicity + gender + e
 plot(g.f_t.box) 
 
 # use box cox
-g.norm.f_t = lmer_alt(G_box ~ Frequency * age.group * maternal.ethnicity + gender + ear + (Frequency || id.res/ear.id), g.norm.2.long, REML = F) 
+g.norm.f_t = lmer(G_box ~ Frequency * age.group * maternal.ethnicity + gender + ear + (1 | id.res/ear.id), g.norm.2.long, REML = F) 
 AIC(g.norm.f_t)
 plot(g.norm.f_t) 
 AIC(g.norm.f_t) # much better AIC
@@ -2582,50 +2583,50 @@ anova(g.norm.f_t)
 Anova(g.norm.f_t) 
 
 # test if main effects are signficant
-g.norm.freq = lmer_alt(G_box ~ age.group * maternal.ethnicity + gender + ear + (Frequency || id.res/ear.id), g.norm.2.long, REML = FALSE)
+g.norm.freq = lmer(G_box ~ age.group * maternal.ethnicity + gender + ear + (1 | id.res/ear.id), g.norm.2.long, REML = FALSE)
 g.norm.freq.anova = anova(g.norm.freq, g.norm.f_t)
 g.norm.freq.anova = g.norm.freq.anova[2,6:8]
 
-g.norm.age = lmer_alt(G_box ~ Frequency * maternal.ethnicity + gender + ear + (Frequency || id.res/ear.id), g.norm.2.long, REML = FALSE)
+g.norm.age = lmer(G_box ~ Frequency * maternal.ethnicity + gender + ear + (1 | id.res/ear.id), g.norm.2.long, REML = FALSE)
 g.norm.age.anova = anova(g.norm.age, g.norm.f_t)
 g.norm.age.anova = g.norm.age.anova[2,6:8]
 
-g.norm.eth = lmer_alt(G_box ~ Frequency * age.group + gender + ear + (Frequency || id.res/ear.id), g.norm.2.long, REML = FALSE)
+g.norm.eth = lmer(G_box ~ Frequency * age.group + gender + ear + (1 | id.res/ear.id), g.norm.2.long, REML = FALSE)
 g.norm.eth.anova = anova(g.norm.eth, g.norm.f_t)
 g.norm.eth.anova = g.norm.eth.anova[2,6:8]
 
-g.norm.ear = lmer_alt(G_box ~ Frequency * age.group * maternal.ethnicity + gender + (Frequency || id.res/ear.id), g.norm.2.long, REML = FALSE)
+g.norm.ear = lmer(G_box ~ Frequency * age.group * maternal.ethnicity + gender + (1 | id.res/ear.id), g.norm.2.long, REML = FALSE)
 g.norm.ear.anova = anova(g.norm.ear, g.norm.f_t)
 g.norm.ear.anova = g.norm.ear.anova[2,6:8]
 
-g.norm.sex = lmer_alt(G_box ~ Frequency * age.group * maternal.ethnicity + ear + (Frequency || id.res/ear.id), g.norm.2.long, REML = FALSE)
+g.norm.sex = lmer(G_box ~ Frequency * age.group * maternal.ethnicity + ear + (1 | id.res/ear.id), g.norm.2.long, REML = FALSE)
 g.norm.sex.anova = anova(g.norm.sex, g.norm.f_t) 
 g.norm.sex.anova = g.norm.sex.anova[2,6:8]
 
 ## and then interactions
 # test age x ethnicity interaction
-g.norm.age.eth = lmer_alt(G_box ~ Frequency * (maternal.ethnicity + age.group) + gender + ear + (Frequency || id.res/ear.id), g.norm.2.long, REML = FALSE)
+g.norm.age.eth = lmer(G_box ~ Frequency * (maternal.ethnicity + age.group) + gender + ear + (1 | id.res/ear.id), g.norm.2.long, REML = FALSE)
 g.norm.age.eth.anova = anova(g.norm.age.eth, g.norm.f_t) 
 g.norm.age.eth.anova = g.norm.age.eth.anova[2,6:8]
 
 # test freq x age interaction
-g.norm.freq.age = lmer_alt(G_box ~ Frequency * maternal.ethnicity + age.group + age.group:maternal.ethnicity +
-                             gender + ear + (Frequency || id.res/ear.id), g.norm.2.long, REML = FALSE)
+g.norm.freq.age = lmer(G_box ~ Frequency * maternal.ethnicity + age.group + age.group:maternal.ethnicity +
+                             gender + ear + (1 | id.res/ear.id), g.norm.2.long, REML = FALSE)
 g.norm.freq.age.anova = anova(g.norm.freq.age, g.norm.f_t) 
 g.norm.freq.age.anova = g.norm.freq.age.anova[2,6:8]
 
 # test frequency x ethnicity interaction
-g.norm.freq.eth = lmer_alt(G_box ~ Frequency * age.group + maternal.ethnicity + age.group:maternal.ethnicity +
-                             gender + ear + (Frequency || id.res/ear.id), g.norm.2.long, REML = FALSE)
+g.norm.freq.eth = lmer(G_box ~ Frequency * age.group + maternal.ethnicity + age.group:maternal.ethnicity +
+                             gender + ear + (1 | id.res/ear.id), g.norm.2.long, REML = FALSE)
 g.norm.freq.eth.anova = anova(g.norm.freq.eth, g.norm.f_t) 
 g.norm.freq.eth.anova = g.norm.freq.eth.anova[2,6:8]
 
 #Freq:maternal.ethnicity:age
-g.norm.freq.eth.age = lmer_alt(G_box ~ Frequency + maternal.ethnicity + age.group + 
+g.norm.freq.eth.age = lmer(G_box ~ Frequency + maternal.ethnicity + age.group + 
                                  Frequency:maternal.ethnicity + 
                                  age.group:maternal.ethnicity + 
                                  age.group:Frequency +
-                                 gender + ear + (Frequency || id.res/ear.id), g.norm.2.long, REML = FALSE)
+                                 gender + ear + (1 | id.res/ear.id), g.norm.2.long, REML = FALSE)
 g.norm.freq.age.eth.anova = anova(g.norm.freq.eth.age, g.norm.f_t) 
 g.norm.freq.age.eth.anova = g.norm.freq.age.eth.anova[2,6:8]
 
@@ -2748,7 +2749,7 @@ plot(b.norm.f_t.log)
 # plot(b.f_t.box) 
 
 # use log transform
-b.norm.f_t = lmer_alt(b.norm_log ~ Frequency * age.group * maternal.ethnicity + gender + ear + (Frequency || id.res/ear.id), b.norm.2.long, REML = F) 
+b.norm.f_t = lmer(b.norm_log ~ Frequency * age.group * maternal.ethnicity + gender + ear + (1 | id.res/ear.id), b.norm.2.long, REML = F) 
 plot(b.norm.f_t) 
 AIC(b.norm.f_t) 
 summary(b.norm.f_t)
@@ -2756,50 +2757,50 @@ anova(b.norm.f_t, test="Chisq")
 Anova(b.norm.f_t) 
 
 # test if main effects are signficant
-b.norm.freq = lmer_alt(b.norm_log ~ age.group * maternal.ethnicity + gender + ear + (Frequency || id.res/ear.id), b.norm.2.long, REML = FALSE)
+b.norm.freq = lmer(b.norm_log ~ age.group * maternal.ethnicity + gender + ear + (1 | id.res/ear.id), b.norm.2.long, REML = FALSE)
 b.norm.freq.anova = anova(b.norm.freq, b.norm.f_t)
 b.norm.freq.anova = b.norm.freq.anova[2,6:8]
 
-b.norm.age = lmer_alt(b.norm_log ~ Frequency * maternal.ethnicity + gender + ear + (Frequency || id.res/ear.id), b.norm.2.long, REML = FALSE)
+b.norm.age = lmer(b.norm_log ~ Frequency * maternal.ethnicity + gender + ear + (1 | id.res/ear.id), b.norm.2.long, REML = FALSE)
 b.norm.age.anova = anova(b.norm.age, b.norm.f_t)
 b.norm.age.anova = b.norm.age.anova[2,6:8]
 
-b.norm.eth = lmer_alt(b.norm_log ~ Frequency * age.group + gender + ear + (Frequency || id.res/ear.id), b.norm.2.long, REML = FALSE)
+b.norm.eth = lmer(b.norm_log ~ Frequency * age.group + gender + ear + (1 | id.res/ear.id), b.norm.2.long, REML = FALSE)
 b.norm.eth.anova = anova(b.norm.eth, b.norm.f_t)
 b.norm.eth.anova = b.norm.eth.anova[2,6:8]
 
-b.norm.ear = lmer_alt(b.norm_log ~ Frequency * age.group * maternal.ethnicity + gender + (Frequency || id.res/ear.id), b.norm.2.long, REML = FALSE)
+b.norm.ear = lmer(b.norm_log ~ Frequency * age.group * maternal.ethnicity + gender + (1 | id.res/ear.id), b.norm.2.long, REML = FALSE)
 b.norm.ear.anova = anova(b.norm.ear, b.norm.f_t)
 b.norm.ear.anova = b.norm.ear.anova[2,6:8]
 
-b.norm.sex = lmer_alt(b.norm_log ~ Frequency * age.group * maternal.ethnicity + ear + (Frequency || id.res/ear.id), b.norm.2.long, REML = FALSE)
+b.norm.sex = lmer(b.norm_log ~ Frequency * age.group * maternal.ethnicity + ear + (1 | id.res/ear.id), b.norm.2.long, REML = FALSE)
 b.norm.sex.anova = anova(b.norm.sex, b.norm.f_t) 
 b.norm.sex.anova = b.norm.sex.anova[2,6:8]
 
 ## and then interactions
 # test age x ethnicity interaction
-b.norm.age.eth = lmer_alt(b.norm_log ~ Frequency * (maternal.ethnicity + age.group) + gender + ear + (Frequency || id.res/ear.id), b.norm.2.long, REML = FALSE)
+b.norm.age.eth = lmer(b.norm_log ~ Frequency * (maternal.ethnicity + age.group) + gender + ear + (1 | id.res/ear.id), b.norm.2.long, REML = FALSE)
 b.norm.age.eth.anova = anova(b.norm.age.eth, b.norm.f_t) 
 b.norm.age.eth.anova = b.norm.age.eth.anova[2,6:8]
 
 # test freq x age interaction
-b.norm.freq.age = lmer_alt(b.norm_log ~ Frequency * maternal.ethnicity + age.group + age.group:maternal.ethnicity +
-                             gender + ear + (Frequency || id.res/ear.id), b.norm.2.long, REML = FALSE)
+b.norm.freq.age = lmer(b.norm_log ~ Frequency * maternal.ethnicity + age.group + age.group:maternal.ethnicity +
+                             gender + ear + (1 | id.res/ear.id), b.norm.2.long, REML = FALSE)
 b.norm.freq.age.anova = anova(b.norm.freq.age, b.norm.f_t) 
 b.norm.freq.age.anova = b.norm.freq.age.anova[2,6:8]
 
 # test frequency x ethnicity interaction
-b.norm.freq.eth = lmer_alt(b.norm_log ~ Frequency * age.group + maternal.ethnicity + age.group:maternal.ethnicity +
-                             gender + ear + (Frequency || id.res/ear.id), b.norm.2.long, REML = FALSE)
+b.norm.freq.eth = lmer(b.norm_log ~ Frequency * age.group + maternal.ethnicity + age.group:maternal.ethnicity +
+                             gender + ear + (1 | id.res/ear.id), b.norm.2.long, REML = FALSE)
 b.norm.freq.eth.anova = anova(b.norm.freq.eth, b.norm.f_t) 
 b.norm.freq.eth.anova = b.norm.freq.eth.anova[2,6:8]
 
 #Freq:maternal.ethnicity:age
-b.norm.freq.eth.age = lmer_alt(b.norm_log ~ Frequency + maternal.ethnicity + age.group + 
+b.norm.freq.eth.age = lmer(b.norm_log ~ Frequency + maternal.ethnicity + age.group + 
                                  Frequency:maternal.ethnicity + 
                                  age.group:maternal.ethnicity + 
                                  age.group:Frequency +
-                                 gender + ear + (Frequency || id.res/ear.id), b.norm.2.long, REML = FALSE)
+                                 gender + ear + (1 | id.res/ear.id), b.norm.2.long, REML = FALSE)
 b.norm.freq.age.eth.anova = anova(b.norm.freq.eth.age, b.norm.f_t) 
 b.norm.freq.age.eth.anova = b.norm.freq.age.eth.anova[2,6:8]
 
@@ -2937,7 +2938,7 @@ ggsave("ls.plots.GB.jpeg", ls.plot.gb, height=6, width=6, dpi=500)
 # present study (12 and 18 mth) - 24 octave raw data and 1/2 octave ls mean
 # note: didn't use hunter 2008 because of wide age ranges of groups 
 
-abs.studies <- read.csv("/Users/Joshua/Dropbox/R/RProjects/WidebandAbsorbance/DataSets and scripts/developmental wai/other studies data/absorbance/absorbance.csv", row.names=NULL)
+abs.studies <- read.csv("absorbance.csv", row.names=NULL)
 colnames(abs.studies) = c("Study", "Age", "250",	"281",	"300",	"350",	"364",	"396.85",	"458",	"500",	"578",	"600",	"700",	"728",	"800",
                           "917",	"1000", "1155",	"1250", "1400",	"1455",	"1500",	"1834",	"2000",	"2311",	"2500",	"2911",	"3000",	"3668", "4000",	
                           "4622",	"5000",	"5823",	"6000",	"7336",	"8000")
@@ -2954,13 +2955,13 @@ abs.studies.long$Study[abs.studies.long$Study == "Werner et al. 2010"] <- "Werne
 abs.studies.long$Study = as.factor(abs.studies.long$Study)
 
 # now add the others
-shahnaz <- read.csv("/Users/Joshua/Dropbox/R/RProjects/WidebandAbsorbance/DataSets and scripts/developmental wai/other studies data/absorbance/shahnaz 2014.csv", row.names=NULL)
+shahnaz <- read.csv("shahnaz 2014.csv", row.names=NULL)
 colnames(shahnaz) = c("Frequency", "Absorbance", "Study", "Age")
 shahnaz = shahnaz[c("Study", "Age", "Frequency", "Absorbance")]
 shahnaz$Study = "Shahnaz et al. (2014)"
 
 library(readxl)
-hunter <- read_excel("/Users/Joshua/Dropbox/R/RProjects/WidebandAbsorbance/DataSets and scripts/developmental wai/other studies data/absorbance/hunter 2010.xlsx", sheet = 1)
+hunter <- read_excel("hunter 2010.xlsx", sheet = 1)
 # change reflectance% to absorbance proportion
 hunter$Reflectance = hunter$ReflectancePercent/100
 hunter$Absorbance = 1 - hunter$Reflectance
@@ -2969,24 +2970,24 @@ hunter$Age = "0"
 hunter = hunter[c("Study", "Age", "Frequency", "Absorbance")]
 hunter$Study = "Hunter et al. (2000)"
 
-keefe <- read_excel("/Users/Joshua/Dropbox/R/RProjects/WidebandAbsorbance/DataSets and scripts/developmental wai/other studies data/absorbance/keefe 1993.xlsx", sheet = 1)
+keefe <- read_excel("keefe 1993.xlsx", sheet = 1)
 keefe$Absorbance = 1 - keefe$Reflectance
 keefe = dplyr::select(keefe, -Reflectance)
 keefe = keefe[c("Study", "Age", "Frequency", "Absorbance")]
 keefe$Study = "Keefe et al. (1993)"
 
-merchant <- read_excel("/Users/Joshua/Dropbox/R/RProjects/WidebandAbsorbance/DataSets and scripts/developmental wai/other studies data/absorbance/merchant 2010.xlsx", sheet = 1)
+merchant <- read_excel("merchant 2010.xlsx", sheet = 1)
 merchant$Absorbance = 1 - merchant$Reflectance
 merchant = dplyr::select(merchant, -Reflectance)
 merchant = merchant[c("Study", "Age", "Frequency", "Absorbance")]
 merchant$Study = "Merchant et al. (2010)"
 
-sanford <- read_excel("/Users/Joshua/Dropbox/R/RProjects/WidebandAbsorbance/DataSets and scripts/developmental wai/other studies data/absorbance/sanford 2009.xls", sheet = 1)
+sanford <- read_excel("sanford 2009.xls", sheet = 1)
 colnames(sanford) = c("Frequency", "Absorbance", "Study", "Age")
 sanford = sanford[c("Study", "Age", "Frequency", "Absorbance")]
 sanford$Study = "Sanford et al. (2009)"
 
-# keefe2000 = read_excel("/Users/Joshua/Dropbox/R/RProjects/WidebandAbsorbance/DataSets and scripts/developmental wai/other studies data/absorbance/keefe 2000 fig 5.xlsx", sheet = 1)
+# keefe2000 = read_excel("keefe 2000 fig 5.xlsx", sheet = 1)
 # colnames(keefe2000) = c("Frequency", "Reflectance", "EqVol", "G", "Age", "Study")
 # keefe2000$Absorbance = 1 - keefe2000$Reflectance
 # keefe2000 = dplyr::select(keefe2000, Frequency, Study, Age, Absorbance)
@@ -3039,7 +3040,7 @@ ggsave("abs.other.studies.jpeg", abs.other.studies.plot, height=6, width=12, dpi
 # mag
 # 6mth - werner, keefe
 # 12-24 mths - keefe
-mag.other.6 <- read.csv("/Users/Joshua/Dropbox/R/RProjects/WidebandAbsorbance/DataSets and scripts/developmental wai/other studies data/magnitude/six month mag.csv", row.names=NULL)
+mag.other.6 <- read.csv("six month mag.csv", row.names=NULL)
 keefe.6 = dplyr::select(mag.other.6, 1:2)
 keefe.6 = na.omit(keefe.6)
 keefe.6$Study = "Keefe et al. (1993)"
@@ -3054,10 +3055,10 @@ werner.6$Age = 6
 colnames(werner.6) = c("Frequency", "Magnitude", "Study", "Age")
 werner.6 = werner.6[c("Study", "Age", "Frequency", "Magnitude")]
 
-keefe.mag.12.24 <- read.csv("/Users/Joshua/Dropbox/R/RProjects/WidebandAbsorbance/DataSets and scripts/developmental wai/other studies data/magnitude/keefe 12 24 mth mag.csv", row.names=NULL)
+keefe.mag.12.24 <- read.csv("keefe 12 24 mth mag.csv", row.names=NULL)
 keefe.mag.12.24 = keefe.mag.12.24[c("Study", "Age", "Frequency", "Magnitude")]
 
-keefe.mag.2000 = read_excel("/Users/Joshua/Dropbox/R/RProjects/WidebandAbsorbance/DataSets and scripts/developmental wai/other studies data/magnitude/keefe 2000 fig 5.xlsx", sheet = 1)
+keefe.mag.2000 = read_excel("mag keefe 2000 fig 5.xlsx", sheet = 1)
 colnames(keefe.mag.2000) = c("Frequency", "Reflectance", "EqVol", "G", "Age", "Study")
 keefe.mag.2000 = dplyr::select(keefe.mag.2000, -Reflectance)
 keefe.mag.2000$Frequency = as.numeric(keefe.mag.2000$Frequency)
@@ -3068,7 +3069,7 @@ keefe.pha.2000 = keefe.mag.2000
 keefe.mag.2000 = dplyr::select(keefe.mag.2000, Frequency, Age, Study, Magnitude)
 keefe.mag.2000 = keefe.mag.2000[c("Study", "Age", "Frequency", "Magnitude")]
 
-sanford.mag.2009 = read_excel("/Users/Joshua/Dropbox/R/RProjects/WidebandAbsorbance/DataSets and scripts/developmental wai/other studies data/magnitude/Sanford 2009.xlsx", sheet = 2) ## day 2 data
+sanford.mag.2009 = read_excel("mag Sanford 2009.xlsx", sheet = 2) ## day 2 data
 sanford.mag.2009 = dplyr::select(sanford.mag.2009, c(1, 9, 15))
 names(sanford.mag.2009) = c("Frequency", "Magnitude", "Phase")
 sanford.mag.2009$Age = 0
@@ -3125,7 +3126,7 @@ ggsave("mag.other.studies.jpeg", mag.other.studies.plot, height=6, width=12, dpi
 keefe.pha.2000 = dplyr::select(keefe.pha.2000, Frequency, Age, Study, Phase)
 keefe.pha.2000 = keefe.pha.2000[c("Study", "Age", "Frequency", "Phase")]
 
-pha.other.6 <- read.csv("/Users/Joshua/Dropbox/R/RProjects/WidebandAbsorbance/DataSets and scripts/developmental wai/other studies data/phase/six month pha.csv", row.names=NULL)
+pha.other.6 <- read.csv("six month pha.csv", row.names=NULL)
 keefe.6 = dplyr::select(pha.other.6, 1:2)
 keefe.6 = na.omit(keefe.6)
 keefe.6$Study = "Keefe et al. (1993)"
@@ -3140,7 +3141,7 @@ werner.6$Age = 6
 colnames(werner.6) = c("Frequency", "Phase", "Study", "Age")
 werner.6 = werner.6[c("Study", "Age", "Frequency", "Phase")]
 
-keefe.pha.12.24 <- read.csv("/Users/Joshua/Dropbox/R/RProjects/WidebandAbsorbance/DataSets and scripts/developmental wai/other studies data/phase/keefe 12 24 mth pha.csv", row.names=NULL)
+keefe.pha.12.24 <- read.csv("keefe 12 24 mth pha.csv", row.names=NULL)
 keefe.pha.12.24 = keefe.pha.12.24[c("Study", "Age", "Frequency", "Phase")]
 
 # add my data
