@@ -1949,6 +1949,8 @@ write.table(ear.canal.lsmean.age_t, file = "ear.canal.emmeans.txt", sep = ",", q
 
 # linear model
 abs.f = lmer(Absorbance ~ Frequency * age.group * maternal.ethnicity + gender + ear + (1 | id.res/ear.id), abs.2.long, REML = F)
+abs.anova2 = as.data.frame(Anova(abs.f))
+
 # check assumptions
 plot(abs.f) 
 # there is a pattern in the residuals - because it is a proportion (bounded by 0 and 1 - not linear, therefore)
@@ -1958,8 +1960,9 @@ abs.2.long$Absorbance_0 = abs.2.long$Absorbance
 abs.2.long$Absorbance_0[abs.2.long$Absorbance_0 <= 0] <- 0.0001
 abs.2.long$Absorbance_t = logit(abs.2.long$Absorbance_0)
 
-abs.f_t = lmer_alt(Absorbance_t ~ Frequency * age.group * maternal.ethnicity + gender +  + ear + (Frequency || id.res/ear.id), abs.2.long, REML = F)
+abs.f_t = lmer_alt(Absorbance_t ~ Frequency * age.group * maternal.ethnicity + gender + ear + (Frequency || id.res/ear.id), abs.2.long, REML = F)
 summary(abs.f_t)
+plot(abs.f_t)
 abs.anova = as.data.frame(Anova(abs.f_t))
 abs.anova$names = rownames(abs.anova)
 abs.anova = abs.anova[,c(4, 1, 2, 3)]
