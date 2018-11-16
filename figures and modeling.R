@@ -1836,7 +1836,7 @@ lsm.basis.glmmTMB <- function (object, trms, xlev, grid, vcov.,
        dfargs = dfargs, misc = misc)
 }
 
-library(lme4)
+library(lme4) 
 library(lmerTest)
 library(MASS)
 library(rcompanion)
