@@ -1800,7 +1800,7 @@ ear.canal.df$maternal.ethnicity[ear.canal.df$maternal.ethnicity == "South Americ
 ear.canal.df$maternal.ethnicity[is.na(ear.canal.df$maternal.ethnicity)] = "Asian"
 ear.canal.df$maternal.ethnicity = droplevels(ear.canal.df$maternal.ethnicity)
 
-# modeling
+# modeling----
 # need to hack lsmeans to work with glmmTMB
 # https://github.com/glmmTMB/glmmTMB/issues/205 - see ben bolker post halfway down
 recover.data.glmmTMB <- function(object, ...) {
@@ -1855,6 +1855,7 @@ options(scipen = 10)
 # use Anova from car package, rather than anova - https://bbolker.github.io/mixedmodels-misc/ecostats_chap.html # can't though because glmmTMB only has anova
 # when comparing with anova - set reml as F, then update with reml = T for final model update(f, REML = T)
 
+# t-tests----
 # age vs ethnicity t-tests for each age group
 # newborns
 abs.2.full.0$maternal.ethnicity[abs.2.full.0$maternal.ethnicity == "African"] = "Asian"
@@ -1868,9 +1869,7 @@ abs.2.full.0$maternal.ethnicity = droplevels(abs.2.full.0$maternal.ethnicity)
 age.0.df = group_by(abs.2.full.0, id.res)
 age.0.df = sample_n(age.0.df, 1)
 t.0 = t.test(age.0.hrs ~ maternal.ethnicity, age.0.df)
-t.0.table = data.frame(matrix(vector(), 1, 4,
-                              dimnames=list(c(), c("Age", "Statistic", "DF", "p.value"))),
-                       stringsAsFactors=F) 
+t.0.table = data.frame(matrix(vector(), 1, 4, dimnames=list(c(), c("Age", "Statistic", "DF", "p.value"))), stringsAsFactors=F) 
 t.0.table$Statistic = round(t.0$statistic, 2)
 t.0.table$DF = round(t.0$parameter, 2)
 t.0.table$p.value = round(t.0$p.value, 3)
@@ -1921,7 +1920,7 @@ t.18.table$Age = "18 months"
 age.t.test.df = rbind.data.frame(t.0.table, t.6.table, t.12.table, t.18.table)
 write.table(age.t.test.df, file = "age.t.test.txt", sep = ",", quote = FALSE, row.names = F)
 
-# ear canal area model
+# ear canal area model----
 ear.canal.f = lmer(S.cm2 ~ age.group * maternal.ethnicity + gender + ear + (1 | id.res/ear.id), ear.canal.df, REML = F)
 # check assumptions
 plot(ear.canal.f) 
@@ -2015,7 +2014,7 @@ ear.canal.lsmean.age_t = mutate_at(ear.canal.lsmean.age_t, vars(mean, lower, upp
 ear.canal.lsmean.age_t = t(ear.canal.lsmean.age_t)
 write.table(ear.canal.lsmean.age_t, file = "ear.canal.lsmeans.txt", sep = ",", quote = FALSE, row.names = F)
 
-## Absorbance
+## Absorbance----
 # first fit with reml = F to compare with anova then final model update with reml = T
 # regarding the random effects - the most correct option is:
 #fit = lmer(Absorbance ~ Frequency * age.group * maternal.ethnicity + gender + ear + (Frequency | id.res/ear.id), abs.2.long, REML = F) 
@@ -2124,8 +2123,6 @@ abs.f.final = update(abs.f.b.full, REML = TRUE)
 
 # post hoc analyses (plot 95% ci)
 # plot means and CI from abs.f.b.full
-abs.f.final = abs.f.b.full
-
 abs.lsmean.age = lsmeans(abs.f.final, specs = "Frequency", by = "age.group") 
 abs.lsmean.age = summary(abs.lsmean.age)
 abs.lsmean.age = dplyr::select(abs.lsmean.age, -c(4:5))
@@ -2192,7 +2189,7 @@ abs.eth.ls <- ggplot(abs.lsmean.eth, aes(x=Frequency, y=mean_t, ymin=lower_t, ym
 #print(abs.eth.ls)
 ggsave("abs.eth.ls.jpeg", abs.eth.ls, height=6, width=10, dpi=500)
 
-## Admittance
+## Admittance----
 mag.norm.f = lmer(mag.norm ~ Frequency * age.group * maternal.ethnicity + gender + ear + (1 | id.res/ear.id), mag.norm.2.long, REML = F) 
 plot(mag.norm.f) # Heteroscedasticity - transforming may help
 
@@ -2203,7 +2200,7 @@ plot(pha.f) # boundry effect - passive system bounded by -90 and 90 degrees (kee
 # do mag tip and normalized mag
 # then normalized G and B
 
-# mag at the tip
+# mag at the tip----
 mag.f = lmer(Magnitude ~ Frequency * age.group * maternal.ethnicity + gender + ear + (1 | id.res/ear.id), mag.2.long, REML = F)
 plot(mag.f) # Heteroscedasticity - transform
 AIC(mag.f)
@@ -2367,7 +2364,7 @@ mag.eth.ls <- ggplot(mag.lsmean.eth_t, aes(x=Frequency, y=mean, ymin=lower, ymax
 #print(mag.eth.ls)
 ggsave("mag.eth.ls.jpeg", mag.eth.ls, height=6, width=10, dpi=500)
 
-## mag.norm
+## mag.norm----
 mag.norm.f = lmer(mag.norm ~ Frequency * age.group * maternal.ethnicity + gender + ear + (1 | id.res/ear.id), mag.norm.2.long, REML = F)
 plot(mag.norm.f) # Heteroscedasticity - transform
 AIC(mag.norm.f)
@@ -2534,7 +2531,7 @@ mag.norm.eth.ls <- ggplot(mag.norm.lsmean.eth_t, aes(x=Frequency, y=mean, ymin=l
 ggsave("mag.norm.eth.ls.jpeg", mag.norm.eth.ls, height=6, width=10, dpi=500)
 
 ####### Normalized G and B
-## g.norm
+## g.norm----
 # the random effect for the final model is Frequency || id.res/ear.id - but it takes a long time to run, so just use the simplified initially
 g.norm.f = lmer(g.norm ~ Frequency * age.group * maternal.ethnicity + gender + ear + (1 | id.res/ear.id), g.norm.2.long, REML = F) 
 plot(g.norm.f) # Heteroscedasticity - transform
@@ -2714,7 +2711,7 @@ g.norm.eth.ls <- ggplot(g.norm.lsmean.eth_t, aes(x=Frequency, y=mean, ymin=lower
 #print(g.norm.eth.ls)
 ggsave("g.norm.eth.ls.jpeg", g.norm.eth.ls, height=6, width=10, dpi=500)
 
-### B norm
+### B norm-----
 b.norm.f = lmer(b.norm ~ Frequency * age.group * maternal.ethnicity + gender + ear + (1 | id.res/ear.id), b.norm.2.long, REML = F) 
 plot(b.norm.f) 
 AIC(b.norm.f)
@@ -2890,7 +2887,7 @@ b.norm.eth.ls <- ggplot(b.norm.lsmean.eth_t, aes(x=Frequency, y=mean, ymin=lower
 #print(b.norm.eth.ls)
 ggsave("b.norm.eth.ls.jpeg", b.norm.eth.ls, height=6, width=10, dpi=500)
 
-## multiplots 
+## multiplots----
 # A, Y, Y norm
 ls.plot.ay <- plot_grid(abs.plot.lsmean, mag.plot.lsmean, mag.norm.plot.lsmean, nrow=3, ncol=1, align = "v", labels = c("A", "B", "C")) 
 ggsave("ls.plots.abs.mag.jpeg", ls.plot.ay, height=9, width=6, dpi=500)
@@ -2899,7 +2896,9 @@ ggsave("ls.plots.abs.mag.jpeg", ls.plot.ay, height=9, width=6, dpi=500)
 ls.plot.gb <- plot_grid(g.norm.plot.lsmean, b.norm.plot.lsmean, nrow=2, ncol=1, align = "v", labels = c("A", "B")) 
 ggsave("ls.plots.GB.jpeg", ls.plot.gb, height=6, width=6, dpi=500)
 
-# Compare our data against other studies
+# AIC table----
+
+# Compare our data against other studies----
 # import normative data and plot against my data
 # plot 24 octave and 1/2 octave lsmeans (can compart hunter lsmeans)
 
