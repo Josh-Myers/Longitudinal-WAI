@@ -1,10 +1,11 @@
+
+# import dataframes for 24 and 2 octave for each age group----
 library(ggplot2)
 library(dplyr)
 library(tidyr)
 library(cowplot)
 library(reshape2)
 
-# import dataframes for 24 and 2 octave for each age group----
 newborn.24 = readRDS("newborn.24.rds")
 newborn.2 = readRDS("newborn.2.rds")
 six.24 = readRDS("six.24.rds")
@@ -2014,7 +2015,7 @@ ear.canal.lsmean.age_t = mutate_at(ear.canal.lsmean.age_t, vars(mean, lower, upp
 ear.canal.lsmean.age_t = t(ear.canal.lsmean.age_t)
 write.table(ear.canal.lsmean.age_t, file = "ear.canal.lsmeans.txt", sep = ",", quote = FALSE, row.names = F)
 
-## Absorbance----
+# Absorbance----
 # first fit with reml = F to compare with anova then final model update with reml = T
 # regarding the random effects - the most correct option is:
 #fit = lmer(Absorbance ~ Frequency * age.group * maternal.ethnicity + gender + ear + (Frequency | id.res/ear.id), abs.2.long, REML = F) 
@@ -2027,7 +2028,7 @@ write.table(ear.canal.lsmean.age_t, file = "ear.canal.lsmeans.txt", sep = ",", q
 
 # linear model
 abs.f = lmer(Absorbance ~ Frequency * age.group + gender + maternal.ethnicity + ear + (1 | id.res/ear.id), abs.2.long, REML = F)
-AIC(abs.f)
+abs.aic.a = AIC(abs.f)
 # check assumptions
 plot(abs.f) 
 # there is a pattern in the residuals - because it is a proportion 
@@ -2038,7 +2039,8 @@ abs.2.long$Absorbance_pos[abs.2.long$Absorbance_pos <= 0] <- 0.0001
 
 abs.f.b.full = glmmTMB(Absorbance_pos ~ Frequency * age.group * maternal.ethnicity + gender + ear + (1 | id.res/ear.id), abs.2.long, 
                        family = beta_family(link = "logit"), REML = F)
-
+abs.aic.b = AIC(abs.f.b.full)
+abs.aic = cbind(abs.aic.a, abs.aic.b)
 # remove variables one at a time to see if significant
 # test if main effect are signficant
 abs.f.freq = glmmTMB(Absorbance_pos ~ age.group * maternal.ethnicity + gender + ear + (1 | id.res/ear.id), 
@@ -2189,7 +2191,7 @@ abs.eth.ls <- ggplot(abs.lsmean.eth, aes(x=Frequency, y=mean_t, ymin=lower_t, ym
 #print(abs.eth.ls)
 ggsave("abs.eth.ls.jpeg", abs.eth.ls, height=6, width=10, dpi=500)
 
-## Admittance----
+# Admittance----
 mag.norm.f = lmer(mag.norm ~ Frequency * age.group * maternal.ethnicity + gender + ear + (1 | id.res/ear.id), mag.norm.2.long, REML = F) 
 plot(mag.norm.f) # Heteroscedasticity - transforming may help
 
@@ -2203,7 +2205,7 @@ plot(pha.f) # boundry effect - passive system bounded by -90 and 90 degrees (kee
 # mag at the tip----
 mag.f = lmer(Magnitude ~ Frequency * age.group * maternal.ethnicity + gender + ear + (1 | id.res/ear.id), mag.2.long, REML = F)
 plot(mag.f) # Heteroscedasticity - transform
-AIC(mag.f)
+mag.aic.a = AIC(mag.f)
 
 # try some different transforms (another option is powertransform function in car package - not sure how to back transfrom though)
 # log
@@ -2239,7 +2241,8 @@ plot(mag.f_t.box) # log was better
 # use log transform
 mag.f_t = lmer(mag_log ~ Frequency * age.group * maternal.ethnicity + gender + ear + (1 | id.res/ear.id), mag.2.long, REML = F)
 plot(mag.f_t)
-AIC(mag.f_t) 
+mag.aic.b = AIC(mag.f_t)
+mag.aic = cbind(mag.aic.a, mag.aic.b)
 summary(mag.f_t)
 anova(mag.f_t)
 
@@ -2364,10 +2367,10 @@ mag.eth.ls <- ggplot(mag.lsmean.eth_t, aes(x=Frequency, y=mean, ymin=lower, ymax
 #print(mag.eth.ls)
 ggsave("mag.eth.ls.jpeg", mag.eth.ls, height=6, width=10, dpi=500)
 
-## mag.norm----
+# mag.norm----
 mag.norm.f = lmer(mag.norm ~ Frequency * age.group * maternal.ethnicity + gender + ear + (1 | id.res/ear.id), mag.norm.2.long, REML = F)
 plot(mag.norm.f) # Heteroscedasticity - transform
-AIC(mag.norm.f)
+mag.norm.aic.a = AIC(mag.norm.f)
 
 # try different transforms 
 # log
@@ -2403,7 +2406,8 @@ plot(mag.norm.f_t.box)
 # use log
 mag.norm.f_t = lmer(mag_log ~ Frequency * age.group * maternal.ethnicity + gender + ear + (1 | id.res/ear.id), mag.norm.2.long, REML = F)
 plot(mag.norm.f_t)
-AIC(mag.norm.f_t) 
+mag.norm.aic.b = AIC(mag.norm.f_t) 
+mag.norm.aic = cbind(mag.norm.aic.a, mag.norm.aic.b)
 summary(mag.norm.f_t)
 anova(mag.norm.f_t)
 
@@ -2531,11 +2535,11 @@ mag.norm.eth.ls <- ggplot(mag.norm.lsmean.eth_t, aes(x=Frequency, y=mean, ymin=l
 ggsave("mag.norm.eth.ls.jpeg", mag.norm.eth.ls, height=6, width=10, dpi=500)
 
 ####### Normalized G and B
-## g.norm----
+# G norm----
 # the random effect for the final model is Frequency || id.res/ear.id - but it takes a long time to run, so just use the simplified initially
 g.norm.f = lmer(g.norm ~ Frequency * age.group * maternal.ethnicity + gender + ear + (1 | id.res/ear.id), g.norm.2.long, REML = F) 
 plot(g.norm.f) # Heteroscedasticity - transform
-AIC(g.norm.f)
+g.norm.aic.a = AIC(g.norm.f)
 
 # transform g
 g.norm.2.long$g.norm1 = g.norm.2.long$g.norm + 1 # make positive for log and boxcox
@@ -2572,9 +2576,9 @@ plot(g.f_t.box)
 
 # use box cox
 g.norm.f_t = lmer(G_box ~ Frequency * age.group * maternal.ethnicity + gender + ear + (1 | id.res/ear.id), g.norm.2.long, REML = F) 
-AIC(g.norm.f_t)
+g.norm.aic.b = AIC(g.norm.f_t)
+g.norm.aic = cbind(g.norm.aic.a, g.norm.aic.b)
 plot(g.norm.f_t) 
-AIC(g.norm.f_t) # much better AIC
 summary(g.norm.f_t)
 anova(g.norm.f_t)
 Anova(g.norm.f_t) 
@@ -2711,10 +2715,10 @@ g.norm.eth.ls <- ggplot(g.norm.lsmean.eth_t, aes(x=Frequency, y=mean, ymin=lower
 #print(g.norm.eth.ls)
 ggsave("g.norm.eth.ls.jpeg", g.norm.eth.ls, height=6, width=10, dpi=500)
 
-### B norm-----
+# B norm-----
 b.norm.f = lmer(b.norm ~ Frequency * age.group * maternal.ethnicity + gender + ear + (1 | id.res/ear.id), b.norm.2.long, REML = F) 
 plot(b.norm.f) 
-AIC(b.norm.f)
+b.norm.aic.a = AIC(b.norm.f)
 
 plotNormalHistogram(b.norm.2.long$b.norm) # original
 
@@ -2748,7 +2752,8 @@ plot(b.norm.f_t.log)
 # use log transform
 b.norm.f_t = lmer(b.norm_log ~ Frequency * age.group * maternal.ethnicity + gender + ear + (1 | id.res/ear.id), b.norm.2.long, REML = F) 
 plot(b.norm.f_t) 
-AIC(b.norm.f_t) 
+b.norm.aic.b = AIC(b.norm.f_t) 
+b.norm.aic = cbind(b.norm.aic.a, b.norm.aic.b)
 summary(b.norm.f_t)
 anova(b.norm.f_t, test="Chisq")
 Anova(b.norm.f_t) 
@@ -2887,7 +2892,7 @@ b.norm.eth.ls <- ggplot(b.norm.lsmean.eth_t, aes(x=Frequency, y=mean, ymin=lower
 #print(b.norm.eth.ls)
 ggsave("b.norm.eth.ls.jpeg", b.norm.eth.ls, height=6, width=10, dpi=500)
 
-## multiplots----
+# multiplots----
 # A, Y, Y norm
 ls.plot.ay <- plot_grid(abs.plot.lsmean, mag.plot.lsmean, mag.norm.plot.lsmean, nrow=3, ncol=1, align = "v", labels = c("A", "B", "C")) 
 ggsave("ls.plots.abs.mag.jpeg", ls.plot.ay, height=9, width=6, dpi=500)
@@ -2897,6 +2902,16 @@ ls.plot.gb <- plot_grid(g.norm.plot.lsmean, b.norm.plot.lsmean, nrow=2, ncol=1, 
 ggsave("ls.plots.GB.jpeg", ls.plot.gb, height=6, width=6, dpi=500)
 
 # AIC table----
+# note - as per anova - need to calculate aic with reml = F model
+colnames(abs.aic) = c("1st", "2nd")
+colnames(mag.aic) = c("1st", "2nd")
+colnames(mag.norm.aic) = c("1st", "2nd")
+colnames(g.norm.aic) = c("1st", "2nd")
+colnames(b.norm.aic) = c("1st", "2nd")
+aic.table = rbind.data.frame(abs.aic, mag.aic, mag.norm.aic, g.norm.aic, b.norm.aic)
+aic.table$`1st` > aic.table$`2nd` # the second (transformed) models are better fitting all round
+aic.table$model = c("Abs", "Ytip", "Yn", "Gn", "Bn")
+write.table(aic.table, file = "aicTable.txt", sep = ",", quote = FALSE, row.names = F)
 
 # Compare our data against other studies----
 # import normative data and plot against my data
