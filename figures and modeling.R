@@ -2569,10 +2569,9 @@ Cox = data.frame(Box$x, Box$y)            # Create a data frame with the results
 Cox2 = Cox[with(Cox, order(-Cox$Box.y)),] # Order the new data frame by decreasing y
 Cox2[1,]                                  # Display the lambda with the greatest log likelihood
 lambda = Cox2[1, "Box.x"]                 # Extract that lambda
-
 g.norm.2.long$G_box = (g.norm.2.long$g.norm1 ^ lambda - 1)/lambda   # Transform the original data
 g.f_t.box = lmer(G_box ~ Frequency * age.group * maternal.ethnicity + gender + ear + (1 | id.res/ear.id), g.norm.2.long, REML = F) 
-plot(g.f_t.box) 
+plot(g.f_t.box)
 
 # use box cox
 g.norm.f_t = lmer(G_box ~ Frequency * age.group * maternal.ethnicity + gender + ear + (1 | id.res/ear.id), g.norm.2.long, REML = F) 
